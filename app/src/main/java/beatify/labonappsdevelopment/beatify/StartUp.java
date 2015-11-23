@@ -58,7 +58,7 @@ public class StartUp extends AppCompatActivity implements
                         mPlayer = player;
                         mPlayer.addConnectionStateCallback(StartUp.this);
                         mPlayer.addPlayerNotificationCallback(StartUp.this);
-                        mPlayer.play("spotify:track:721OBJJAh71KjKLdJUDJvt");
+                        mPlayer.play("spotify:user:skatygarcia:playlist:36f5MuoelMRwVIet1HUqYC");
                     }
 
                     @Override

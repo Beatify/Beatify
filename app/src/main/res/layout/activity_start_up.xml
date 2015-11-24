@@ -1,47 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="10dp">
+    android:background="@color/colorPrimary">
 
     <ImageView
         android:id="@+id/ic_beatify_red"
         android:layout_centerHorizontal="true"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:layout_margin="60dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="0dp"
         android:src="@mipmap/beatify_red"/>
 
-    <TextView
-        android:id="@+id/login_note"
-        android:layout_below="@id/ic_beatify_red"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:hint="@string/spotify_login"/>
-
-    <EditText
-        android:id="@+id/login_usr"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/login_note"
-        android:hint="@string/spotify_usr" />
-
-    <EditText
-        android:id="@+id/login_pwd"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/login_usr"
-        android:hint="@string/spotify_pwd"/>
-
-    <Button
-        android:id="@+id/login_btn"
-        android:layout_centerHorizontal="true"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/login_pwd"
-        android:text="@string/button_login"
-        android:background="@drawable/mybutton"
-        android:textColor="@color/colorWhite" />
 
 </RelativeLayout>

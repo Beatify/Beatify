@@ -27,6 +27,9 @@ public class StartUp extends AppCompatActivity implements
 
     private static final int REQUEST_CODE = 1337;
 
+
+    private static final int ACTIVITY_CREATE = 0;
+
     private Player mPlayer;
 
     @Override
@@ -49,6 +52,10 @@ public class StartUp extends AppCompatActivity implements
 
         // Check if result comes from the correct activity
         if (requestCode == REQUEST_CODE) {
+
+            Intent i = new Intent(this,MainActivity.class);
+            startActivityForResult(i, ACTIVITY_CREATE);
+/*
             AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, intent);
             if (response.getType() == AuthenticationResponse.Type.TOKEN) {
                 Config playerConfig = new Config(this, response.getAccessToken(), CLIENT_ID);
@@ -67,6 +74,7 @@ public class StartUp extends AppCompatActivity implements
                     }
                 });
             }
+*/
         }
     }
 

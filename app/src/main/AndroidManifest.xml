@@ -2,6 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="beatify.labonappsdevelopment.beatify" >
 
+    <uses-feature android:name="android.hardware.bluetooth_le" android:required="true"/>
+
+    <uses-permission android:name="android.permission.BLUETOOTH"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -27,6 +32,10 @@
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBar" >
         </activity>
+
+        <activity android:name=".bluetooth.DeviceScanActivity"/>
+        <activity android:name=".bluetooth.DeviceControlActivity"/>
+        <service android:name=".bluetooth.BluetoothLeService" android:enabled="true"/>
     </application>
 
 </manifest>

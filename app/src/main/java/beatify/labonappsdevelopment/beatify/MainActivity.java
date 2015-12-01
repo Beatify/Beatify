@@ -1,5 +1,6 @@
 package beatify.labonappsdevelopment.beatify;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -13,8 +14,13 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import beatify.labonappsdevelopment.beatify.bluetooth.DeviceScanActivity;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    private static final int ACTIVITY_CREATE = 0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,6 +114,9 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_device) {
             item.setTitle("Device XY");
+
+            Intent i = new Intent(this,DeviceScanActivity.class);
+            startActivityForResult(i, ACTIVITY_CREATE);
         }
         /*else if (id == R.id.nav_send) {
 

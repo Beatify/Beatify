@@ -18,6 +18,8 @@ import com.spotify.sdk.android.player.Player;
 import com.spotify.sdk.android.player.PlayerNotificationCallback;
 import com.spotify.sdk.android.player.PlayerState;
 
+import beatify.labonappsdevelopment.beatify.bluetooth.DeviceScanActivity;
+
 public class StartUp extends AppCompatActivity implements
         PlayerNotificationCallback, ConnectionStateCallback{
     // TODO: Replace with your client ID
@@ -55,6 +57,7 @@ public class StartUp extends AppCompatActivity implements
 
             Intent i = new Intent(this,MainActivity.class);
             startActivityForResult(i, ACTIVITY_CREATE);
+
 /*
             AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, intent);
             if (response.getType() == AuthenticationResponse.Type.TOKEN) {

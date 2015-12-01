@@ -18,8 +18,6 @@ import com.spotify.sdk.android.player.Player;
 import com.spotify.sdk.android.player.PlayerNotificationCallback;
 import com.spotify.sdk.android.player.PlayerState;
 
-import beatify.labonappsdevelopment.beatify.bluetooth.DeviceScanActivity;
-
 public class StartUp extends AppCompatActivity implements
         PlayerNotificationCallback, ConnectionStateCallback{
     // TODO: Replace with your client ID

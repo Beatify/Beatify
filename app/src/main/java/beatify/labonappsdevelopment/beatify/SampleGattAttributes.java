@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package beatify.labonappsdevelopment.beatify.bluetooth;
+package beatify.labonappsdevelopment.beatify;
 
 import java.util.HashMap;
 

@@ -14,8 +14,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import beatify.labonappsdevelopment.beatify.bluetooth.DeviceScanActivity;
-
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -104,24 +102,17 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camara) {
+        if (id == R.id.nav_songs) {
             // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_device) {
-            item.setTitle("Device XY");
-
-            Intent i = new Intent(this,DeviceScanActivity.class);
+        } else if (id == R.id.nav_devices) {
+            //item.setTitle("Device XY");
+            Intent i = new Intent(this, DeviceScanActivity.class);
             startActivityForResult(i, ACTIVITY_CREATE);
-        }
-        /*else if (id == R.id.nav_send) {
+
+        } else if (id == R.id.nav_connected_device) {
 
         }
-        */
+        
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

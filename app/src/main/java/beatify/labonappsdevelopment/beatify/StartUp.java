@@ -1,11 +1,13 @@
 package beatify.labonappsdevelopment.beatify;
 
+import android.app.DownloadManager;
 import android.support.v7.app.AppCompatActivity;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.spotify.sdk.android.authentication.AuthenticationClient;
@@ -17,6 +19,9 @@ import com.spotify.sdk.android.player.ConnectionStateCallback;
 import com.spotify.sdk.android.player.Player;
 import com.spotify.sdk.android.player.PlayerNotificationCallback;
 import com.spotify.sdk.android.player.PlayerState;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class StartUp extends AppCompatActivity implements
         PlayerNotificationCallback, ConnectionStateCallback{
@@ -31,6 +36,9 @@ public class StartUp extends AppCompatActivity implements
     private static final int ACTIVITY_CREATE = 0;
 
     private Player mPlayer;
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

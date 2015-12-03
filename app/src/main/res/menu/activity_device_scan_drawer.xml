@@ -7,8 +7,10 @@
         <item android:id="@+id/nav_devices"
             android:icon="@android:drawable/stat_sys_data_bluetooth"
             android:title="@string/available_device" />
+        <item android:id="@+id/nav_heart_rate"
+            android:title="@string/heart_rate_no_data" android:checkable="false" />
     </group>
-    <item android:title="Connected Device">
+    <item android:title="@string/connected_device">
         <menu>
             <item android:id="@+id/nav_connected_device" android:icon="@android:drawable/ic_dialog_info"
                 android:title="@string/no_device" android:checkable="false" />

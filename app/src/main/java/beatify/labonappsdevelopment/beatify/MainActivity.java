@@ -1,6 +1,9 @@
 package beatify.labonappsdevelopment.beatify;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -19,6 +22,9 @@ public class MainActivity extends AppCompatActivity
 
     private static final int ACTIVITY_CREATE = 0;
 
+    private MenuItem heartRatMenuItem;
+    private MenuItem connectedDeviceMenuItem;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,12 +42,20 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        FloatingActionButton play = (FloatingActionButton) findViewById(R.id.play);
+        final FloatingActionButton play = (FloatingActionButton) findViewById(R.id.play);
         play.setOnClickListener(new View.OnClickListener() {
+            boolean isPlaying = false;
+
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                //Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                //       .setAction("Action", null).show();
+                isPlaying = !isPlaying;
+                if (isPlaying)
+                    play.setBackgroundDrawable(getResources().getDrawable(android.R.drawable.ic_media_pause));
+                else
+                    play.setBackgroundDrawable(getResources().getDrawable(android.R.drawable.ic_media_play));
+
             }
         });
 
@@ -62,6 +76,12 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        connectedDeviceMenuItem = navigationView.getMenu().findItem(R.id.nav_connected_device);
+        heartRatMenuItem = navigationView.getMenu().findItem(R.id.nav_heart_rate);
+
+        registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
+
     }
 
     @Override
@@ -117,5 +137,29 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+
+
+    private final BroadcastReceiver mGattUpdateReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
+            if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
+                String data = intent.getStringExtra(BluetoothLeService.EXTRA_DATA);
+                if(data != null)
+                    heartRatMenuItem.setTitle(getResources().getString(R.string.heart_rate) + ": " + data);
+
+            }
+        }
+    };
+
+    private static IntentFilter makeGattUpdateIntentFilter() {
+        final IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(BluetoothLeService.ACTION_GATT_CONNECTED);
+        intentFilter.addAction(BluetoothLeService.ACTION_GATT_DISCONNECTED);
+        intentFilter.addAction(BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED);
+        intentFilter.addAction(BluetoothLeService.ACTION_DATA_AVAILABLE);
+        return intentFilter;
     }
 }

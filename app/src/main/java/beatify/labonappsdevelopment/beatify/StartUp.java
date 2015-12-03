@@ -18,6 +18,28 @@ import com.spotify.sdk.android.player.Player;
 import com.spotify.sdk.android.player.PlayerNotificationCallback;
 import com.spotify.sdk.android.player.PlayerState;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import kaaes.spotify.webapi.android.SpotifyApi;
+import kaaes.spotify.webapi.android.SpotifyError;
+import kaaes.spotify.webapi.android.SpotifyService;
+import kaaes.spotify.webapi.android.models.Album;
+import kaaes.spotify.webapi.android.models.Pager;
+import kaaes.spotify.webapi.android.models.Playlist;
+import kaaes.spotify.webapi.android.models.PlaylistSimple;
+import kaaes.spotify.webapi.android.models.PlaylistTrack;
+import kaaes.spotify.webapi.android.models.SavedTrack;
+import kaaes.spotify.webapi.android.models.UserPrivate;
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
+
 public class StartUp extends AppCompatActivity implements
         PlayerNotificationCallback, ConnectionStateCallback{
     // TODO: Replace with your client ID
@@ -28,6 +50,9 @@ public class StartUp extends AppCompatActivity implements
     private static final int REQUEST_CODE = 1337;
 
     private Player mPlayer;
+    private final String USER_AGENT = "Mozilla/5.0";
+    private UserPrivate uData;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +62,7 @@ public class StartUp extends AppCompatActivity implements
         AuthenticationRequest.Builder builder = new AuthenticationRequest.Builder(CLIENT_ID,
                 AuthenticationResponse.Type.TOKEN,
                 REDIRECT_URI);
-        builder.setScopes(new String[]{"user-read-private", "streaming"});
+        builder.setScopes(new String[]{"user-read-private", "streaming", "playlist-read-collaborative"});
         AuthenticationRequest request = builder.build();
 
         AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
@@ -51,7 +76,60 @@ public class StartUp extends AppCompatActivity implements
         if (requestCode == REQUEST_CODE) {
             AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, intent);
             if (response.getType() == AuthenticationResponse.Type.TOKEN) {
-                Config playerConfig = new Config(this, response.getAccessToken(), CLIENT_ID);
+                SpotifyApi api = new SpotifyApi();
+                api.setAccessToken(response.getAccessToken());
+                SpotifyService spotify = api.getService();
+
+                //get UserID
+                spotify.getMe(new Callback<UserPrivate>() {
+                    @Override
+                    public void success(UserPrivate userPrivate, retrofit.client.Response response) {
+                        Log.d("User success", userPrivate.id);
+                        uData = userPrivate;
+                    }
+
+                    @Override
+                    public void failure(RetrofitError error) {
+                        //TODO: Errorhandling
+                    }
+                });
+
+                //get all playlists: should replace huetterth with UserID from above
+                spotify.getPlaylists("huetterth", new Callback<Pager<PlaylistSimple>>() {
+                    @Override
+                    public void success(Pager<PlaylistSimple> playlistSimplePager, Response response) {
+                        Log.d("TEST", "Got the playlists");
+                        List<PlaylistSimple> playlists = playlistSimplePager.items;
+                        for (PlaylistSimple p : playlists) {
+                            Log.e("TEST", p.name + " - " + p.id);
+                        }
+                    }
+
+                    @Override
+                    public void failure(RetrofitError error) {
+                        Log.e("TEST", "Could not get playlists");
+                    }
+                });
+
+                //get all songs from a playlist: again replace UserID and do it for all playlists
+                spotify.getPlaylistTracks("huetterth", "35cPdE04iQQgztYxNyx2mC", new Callback<Pager<PlaylistTrack>>() {
+                    @Override
+                    public void success(Pager<PlaylistTrack> playlistTrackPager, Response response) {
+                        Log.e("TEST", "GOT the tracks in playlist");
+                        List<PlaylistTrack> items = playlistTrackPager.items;
+                        for (PlaylistTrack pt : items) {
+                            Log.e("TEST", pt.track.name + " - " + pt.track.artists.get(0).name + " - " + pt.track.id);
+                        }
+                    }
+
+                    @Override
+                    public void failure(RetrofitError error) {
+                        Log.e("TEST", "Could not get playlist tracks");
+                    }
+                });
+
+
+                /*Config playerConfig = new Config(this, response.getAccessToken(), CLIENT_ID);
                 Spotify.getPlayer(playerConfig, this, new Player.InitializationObserver() {
                     @Override
                     public void onInitialized(Player player) {
@@ -65,7 +143,7 @@ public class StartUp extends AppCompatActivity implements
                     public void onError(Throwable throwable) {
                         Log.e("MainActivity", "Could not initialize player: " + throwable.getMessage());
                     }
-                });
+                });*/
             }
         }
     }

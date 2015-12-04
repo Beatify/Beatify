@@ -18,6 +18,12 @@
     <string name="heart_rate_no_data">Heart Rate (bpm): No data</string>
 
 
+    <string name="spotify_id">User ID</string>
+    <string name="spotify_displayname">Display name</string>
+    <string name="spotify_unknown_playlist">Unknown playlist</string>
+    <string name="spotify_nr_tracks">Number of Tracks</string>
+
+
 
     <!-- bluetooth -->
     <string name="ble_not_supported">BLE is not supported</string>

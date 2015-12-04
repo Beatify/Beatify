@@ -21,7 +21,19 @@ import com.spotify.sdk.android.player.PlayerNotificationCallback;
 import com.spotify.sdk.android.player.PlayerState;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+
+import kaaes.spotify.webapi.android.SpotifyApi;
+import kaaes.spotify.webapi.android.SpotifyService;
+import kaaes.spotify.webapi.android.models.Pager;
+import kaaes.spotify.webapi.android.models.PlaylistSimple;
+import kaaes.spotify.webapi.android.models.PlaylistTrack;
+import kaaes.spotify.webapi.android.models.UserPrivate;
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 public class StartUp extends AppCompatActivity implements
         PlayerNotificationCallback, ConnectionStateCallback{
@@ -29,16 +41,13 @@ public class StartUp extends AppCompatActivity implements
     private static final String CLIENT_ID = "e0350925a3624229875cb15856fb7567";
     // TODO: Replace with your redirect URI
     private static final String REDIRECT_URI = "beatify-login://callback";
-
     private static final int REQUEST_CODE = 1337;
-
-
     private static final int ACTIVITY_CREATE = 0;
 
-    private Player mPlayer;
+    private static Intent itentMainActivity;
 
 
-
+    public StartUp() {}
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +61,9 @@ public class StartUp extends AppCompatActivity implements
         AuthenticationRequest request = builder.build();
 
         AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
+
+        Utils.userPlaylists = new LinkedList<PlaylistSimple>();
+        Utils.userPlaylistsTracks = new HashMap<String, List<PlaylistTrack>>();
     }
 
     @Override
@@ -60,31 +72,58 @@ public class StartUp extends AppCompatActivity implements
 
         // Check if result comes from the correct activity
         if (requestCode == REQUEST_CODE) {
+            itentMainActivity = new Intent(this, MainActivity.class);
 
-            Intent i = new Intent(this,MainActivity.class);
-            startActivityForResult(i, ACTIVITY_CREATE);
-
-/*
             AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, intent);
             if (response.getType() == AuthenticationResponse.Type.TOKEN) {
-                Config playerConfig = new Config(this, response.getAccessToken(), CLIENT_ID);
-                Spotify.getPlayer(playerConfig, this, new Player.InitializationObserver() {
+                Utils.api = new SpotifyApi();
+                Utils.api.setAccessToken(response.getAccessToken());
+                Utils.spotify = Utils.api.getService();
+
+                //new getUserID().execute();
+
+                //get user_id
+                Utils.spotify.getMe(new Callback<UserPrivate>() {
                     @Override
-                    public void onInitialized(Player player) {
-                        mPlayer = player;
-                        mPlayer.addConnectionStateCallback(StartUp.this);
-                        mPlayer.addPlayerNotificationCallback(StartUp.this);
-                        mPlayer.play("spotify:user:skatygarcia:playlist:36f5MuoelMRwVIet1HUqYC");
+                    public void success(final UserPrivate userPrivate, retrofit.client.Response response) {
+                        Log.d("User success", userPrivate.id);
+                        Utils.userData = userPrivate;
+                        //get playlists
+                        Utils.spotify.getPlaylists(userPrivate.id, new Callback<Pager<PlaylistSimple>>() {
+                            @Override
+                            public void success(Pager<PlaylistSimple> playlistSimplePager, Response response) {
+                                List<PlaylistSimple> playlists = playlistSimplePager.items;
+                                Utils.userPlaylists = playlists;
+                                for (PlaylistSimple p : playlists) {
+                                    Utils.spotify.getPlaylistTracks(userPrivate.id, p.id, new Callback<Pager<PlaylistTrack>>() {
+                                        @Override
+                                        public void success(Pager<PlaylistTrack> playlistTrackPager, Response response) {
+                                            List<PlaylistTrack> tracks = playlistTrackPager.items;
+                                            Utils.userPlaylistsTracks.put(response.getUrl().split("/")[7], tracks);
+                                        }
+                                        @Override
+                                        public void failure(RetrofitError error) {
+                                            Log.e("TEST", "Could not get playlist tracks");
+                                        }
+                                    });
+                                }
+                                startActivityForResult(itentMainActivity, ACTIVITY_CREATE);
+                            }
+                            @Override
+                            public void failure(RetrofitError error) {
+                                Log.e("TEST", "Could not get playlists");
+                            }
+                        });
                     }
 
                     @Override
-                    public void onError(Throwable throwable) {
-                        Log.e("MainActivity", "Could not initialize player: " + throwable.getMessage());
+                    public void failure(RetrofitError error) {
+                        Log.e("TEST", "Could not get userdata");
                     }
                 });
             }
-*/
         }
+
     }
 
     @Override

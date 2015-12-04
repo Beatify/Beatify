@@ -1,7 +1,6 @@
 package beatify.labonappsdevelopment.beatify;
 
 import android.app.Activity;
-import android.app.ListFragment;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGattCharacteristic;
@@ -17,8 +16,6 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,7 +31,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
-import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -101,7 +97,6 @@ public class DeviceScanActivity extends AppCompatActivity
         ///
         /// Bluetooth Device Control
         ///
-
         final Intent intent = getIntent();
         mDeviceName = intent.getStringExtra(EXTRAS_DEVICE_NAME);
         mDeviceAddress = intent.getStringExtra(EXTRAS_DEVICE_ADDRESS);
@@ -116,6 +111,8 @@ public class DeviceScanActivity extends AppCompatActivity
 
         connectedDeviceMenuItem = navigationView.getMenu().findItem(R.id.nav_connected_device);
         heartRatMenuItem = navigationView.getMenu().findItem(R.id.nav_heart_rate);
+
+        Utils.displaySpoitfyUserInfo(navigationView);
     }
 
     @Override
@@ -216,10 +213,7 @@ public class DeviceScanActivity extends AppCompatActivity
 
                     TextView conn = (TextView)view.findViewById(R.id.connection);
                     conn.setText(R.string.disconnected);
-                    conn.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
-
-                    TextView deviceAddressTV = (TextView) findViewById(R.id.device_address);
-                    deviceAddressTV.setText(R.string.disconnected);
+                    conn.setTextColor(getResources().getColor(R.color.colorDisonnected));
 
                     heartRatMenuItem.setTitle(R.string.heart_rate_no_data);
                     connectedDeviceMenuItem.setTitle(R.string.no_device);
@@ -238,10 +232,7 @@ public class DeviceScanActivity extends AppCompatActivity
 
                     TextView conn = (TextView)view.findViewById(R.id.connection);
                     conn.setText(R.string.connected);
-                    conn.setTextColor(getResources().getColor(R.color.colorAccent));
-
-                    TextView deviceAddressTV = (TextView) findViewById(R.id.device_address);
-                    deviceAddressTV.setText(device.getAddress());
+                    conn.setTextColor(getResources().getColor(R.color.colorConnected));
 
                     heartRatMenuItem.setTitle(getResources().getString(R.string.heart_rate) + ": " + mData);
                     connectedDeviceMenuItem.setTitle(mDeviceName);
@@ -363,6 +354,14 @@ public class DeviceScanActivity extends AppCompatActivity
                 viewHolder.deviceName.setText(R.string.unknown_device);
             viewHolder.deviceAddress.setText(device.getAddress());
 
+            TextView conn = (TextView)view.findViewById(R.id.connection);
+            if(device.getAddress().equals(DeviceScanActivity.mDeviceAddress)) {
+                conn.setText(R.string.connected);
+                conn.setTextColor(getResources().getColor(R.color.colorConnected));
+            } else {
+                conn.setText(R.string.disconnected);
+                conn.setTextColor(getResources().getColor(R.color.colorDisonnected));
+            }
             return view;
         }
     }
@@ -464,7 +463,7 @@ public class DeviceScanActivity extends AppCompatActivity
         mDataField.setText(R.string.no_data);
     }
 
-    private static IntentFilter makeGattUpdateIntentFilter() {
+    protected static IntentFilter makeGattUpdateIntentFilter() {
         final IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(BluetoothLeService.ACTION_GATT_CONNECTED);
         intentFilter.addAction(BluetoothLeService.ACTION_GATT_DISCONNECTED);

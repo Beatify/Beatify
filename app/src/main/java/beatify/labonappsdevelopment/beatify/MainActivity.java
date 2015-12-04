@@ -1,5 +1,6 @@
 package beatify.labonappsdevelopment.beatify;
 
+import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -7,6 +8,8 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -16,6 +19,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.BaseAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import kaaes.spotify.webapi.android.models.PlaylistSimple;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -24,6 +37,10 @@ public class MainActivity extends AppCompatActivity
 
     private MenuItem heartRatMenuItem;
     private MenuItem connectedDeviceMenuItem;
+
+    private ListView mListView;
+    private PlaylistListAdapter mPlaylistListAdapter;
+
 
 
     @Override
@@ -80,8 +97,11 @@ public class MainActivity extends AppCompatActivity
         connectedDeviceMenuItem = navigationView.getMenu().findItem(R.id.nav_connected_device);
         heartRatMenuItem = navigationView.getMenu().findItem(R.id.nav_heart_rate);
 
-        registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
+        registerReceiver(mGattUpdateReceiver, DeviceScanActivity.makeGattUpdateIntentFilter());
 
+        Utils.displaySpoitfyUserInfo(navigationView);
+
+        mListView = (ListView) findViewById(R.id.playlist_list);
     }
 
     @Override
@@ -116,6 +136,32 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Initializes list view adapter.
+        mPlaylistListAdapter = new PlaylistListAdapter();
+        mListView.setAdapter(mPlaylistListAdapter);
+
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                PlaylistSimple pl = mPlaylistListAdapter.getPlaylist(position);
+                Log.d("-------", "Clicked position:" + position + " = " + pl.name);
+            }
+        });
+
+
+
+        Log.d("---------", "PL-size: " + Utils.userPlaylists.size());
+        for (PlaylistSimple pl: Utils.userPlaylists) {
+            mPlaylistListAdapter.addPlaylist(pl);
+            mPlaylistListAdapter.notifyDataSetChanged();
+        }
+
+    }
+
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -132,14 +178,12 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_connected_device) {
 
         }
-        
+
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-
-
 
     private final BroadcastReceiver mGattUpdateReceiver = new BroadcastReceiver() {
         @Override
@@ -147,19 +191,80 @@ public class MainActivity extends AppCompatActivity
             final String action = intent.getAction();
             if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
                 String data = intent.getStringExtra(BluetoothLeService.EXTRA_DATA);
-                if(data != null)
+                if (data != null)
                     heartRatMenuItem.setTitle(getResources().getString(R.string.heart_rate) + ": " + data);
 
             }
         }
     };
 
-    private static IntentFilter makeGattUpdateIntentFilter() {
-        final IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(BluetoothLeService.ACTION_GATT_CONNECTED);
-        intentFilter.addAction(BluetoothLeService.ACTION_GATT_DISCONNECTED);
-        intentFilter.addAction(BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED);
-        intentFilter.addAction(BluetoothLeService.ACTION_DATA_AVAILABLE);
-        return intentFilter;
+
+
+    static class ViewHolder {
+        TextView playListName;
+        TextView playListSize;
+    }
+
+    private class PlaylistListAdapter extends BaseAdapter {
+
+        private List<PlaylistSimple> mPlaylists;
+        private LayoutInflater mInflator;
+
+        public PlaylistListAdapter() {
+            super();
+            mPlaylists = new ArrayList<PlaylistSimple>();
+            mInflator = MainActivity.this.getLayoutInflater();
+        }
+
+        public void addPlaylist(PlaylistSimple playlist) {
+            if (!mPlaylists.contains(playlist))
+                mPlaylists.add(playlist);
+        }
+
+        public PlaylistSimple getPlaylist(int position) {
+            return mPlaylists.get(position);
+        }
+
+        public void clear() {
+            mPlaylists.clear();
+        }
+
+        @Override
+        public int getCount() {
+            return mPlaylists.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return mPlaylists.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(int position, View view, ViewGroup parent) {
+            ViewHolder viewHolder;
+
+            view = mInflator.inflate(R.layout.listitem_playlist, null);
+            viewHolder = new ViewHolder();
+            viewHolder.playListName = (TextView) view.findViewById(R.id.playlist_name);
+            viewHolder.playListSize = (TextView) view.findViewById(R.id.playlist_size);
+            view.setTag(viewHolder);
+
+            PlaylistSimple playlist = mPlaylists.get(position);
+            final String name = playlist.name;
+            if (name != null && name.length() > 0)
+                viewHolder.playListName.setText(name);
+            else
+                viewHolder.playListName.setText(R.string.spotify_unknown_playlist);
+
+            viewHolder.playListSize.setText(
+                    getResources().getString(R.string.spotify_nr_tracks) + ":" + playlist.tracks.total);
+
+            return view;
+        }
     }
 }

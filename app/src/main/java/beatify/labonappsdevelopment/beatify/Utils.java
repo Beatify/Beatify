@@ -71,9 +71,11 @@ public class Utils {
                     if (isPlaying) {
                         BeatifyPlayer.beatifyPlayer.pause();
                         Toast.makeText(ctx, ctx.getString(R.string.pause), Toast.LENGTH_SHORT).show();
+                        play.setImageDrawable(ctx.getResources().getDrawable(android.R.drawable.ic_media_pause));
                     } else {
                         BeatifyPlayer.beatifyPlayer.play();
                         Toast.makeText(ctx, ctx.getString(R.string.play), Toast.LENGTH_SHORT).show();
+                        play.setImageDrawable(ctx.getResources().getDrawable(android.R.drawable.ic_media_play));
                     }
                 } else {
                     Toast.makeText(ctx, "Please select a playlist.", Toast.LENGTH_SHORT).show();

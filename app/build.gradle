@@ -38,6 +38,9 @@ dependencies {
     compile 'com.squareup.retrofit:retrofit:1.9.0'
     compile 'com.squareup.okhttp:okhttp:2.2.0'
 
+    // Icons
+    compile 'com.joanzapata.iconify:android-iconify-fontawesome:2.1.1'
+
     testCompile 'junit:junit:4.12'
 
     compile 'com.android.support:appcompat-v7:23.1.1'

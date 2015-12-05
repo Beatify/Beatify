@@ -107,8 +107,6 @@ public class DeviceScanActivity extends AppCompatActivity
         Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
         bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
 
-        mDataField = (TextView) findViewById(R.id.data_value);
-
         mBluetoothAdapter.startLeScan(mLeScanCallback);
         mScanning = true;
 
@@ -116,6 +114,10 @@ public class DeviceScanActivity extends AppCompatActivity
         heartRatMenuItem = navigationView.getMenu().findItem(R.id.nav_heart_rate);
 
         Utils.displaySpoitfyUserInfo(navigationView);
+        Utils.setNavigationViewIcons(this, navigationView);
+
+        TextView emptyText = (TextView)findViewById(android.R.id.empty);
+        mListView.setEmptyView(emptyText);
     }
 
     @Override
@@ -406,8 +408,6 @@ public class DeviceScanActivity extends AppCompatActivity
     protected static boolean mConnected = false;
     protected static Integer mData;
 
-    private TextView mDataField;
-
     // Code to manage Service lifecycle.
     protected final ServiceConnection mServiceConnection = new ServiceConnection() {
 
@@ -444,7 +444,6 @@ public class DeviceScanActivity extends AppCompatActivity
             } else if (BluetoothLeService.ACTION_GATT_DISCONNECTED.equals(action)) {
                 mConnected = false;
                 invalidateOptionsMenu();
-                clearUI();
             } else if (BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
                 // Show all the supported services and characteristics on the user interface.
                 displayGattServices(mBluetoothLeService.getSupportedGattServices());
@@ -458,12 +457,7 @@ public class DeviceScanActivity extends AppCompatActivity
         if (data != null) {
             mData = Integer.parseInt(data);
             heartRatMenuItem.setTitle(getResources().getString(R.string.heart_rate) + ": " + mData);
-            mDataField.setText(data);
         }
-    }
-
-    private void clearUI() {
-        mDataField.setText(R.string.no_data);
     }
 
     protected static IntentFilter makeGattUpdateIntentFilter() {

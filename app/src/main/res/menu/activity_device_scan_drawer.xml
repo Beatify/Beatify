@@ -3,7 +3,7 @@
     <group android:checkableBehavior="single">
         <item android:id="@+id/nav_songs"
             android:icon="@android:drawable/ic_media_play"
-            android:title="@string/songs" />
+            android:title="@string/playlist" />
         <item android:id="@+id/nav_devices"
             android:icon="@android:drawable/stat_sys_data_bluetooth"
             android:title="@string/available_device" />

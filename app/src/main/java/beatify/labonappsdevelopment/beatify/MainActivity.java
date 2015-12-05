@@ -22,7 +22,12 @@ import android.widget.BaseAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.joanzapata.iconify.IconDrawable;
+import com.joanzapata.iconify.Iconify;
+import com.joanzapata.iconify.fonts.FontAwesomeIcons;
+import com.joanzapata.iconify.fonts.FontAwesomeModule;
 import com.spotify.sdk.android.player.Config;
 import com.spotify.sdk.android.player.ConnectionStateCallback;
 import com.spotify.sdk.android.player.Player;
@@ -72,6 +77,11 @@ public class MainActivity extends AppCompatActivity
 
         Utils.displaySpoitfyUserInfo(navigationView);
         mListView = (ListView) findViewById(R.id.playlist_list);
+
+        Utils.setNavigationViewIcons(this, navigationView);
+
+        TextView emptyText = (TextView)findViewById(android.R.id.empty);
+        mListView.setEmptyView(emptyText);
     }
 
     @Override
@@ -280,6 +290,15 @@ public class MainActivity extends AppCompatActivity
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 BeatifyPlayer.beatifyPlayer = new BeatifyPlayer(mPlaylistListAdapter.getPlaylist(position));
                 BeatifyPlayer.beatifyPlayer.play();
+            }
+        });
+
+        mListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                Toast.makeText(getApplicationContext(), "long click.", Toast.LENGTH_SHORT).show();
+                return true;
             }
         });
 

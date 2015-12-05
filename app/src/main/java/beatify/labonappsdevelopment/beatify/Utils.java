@@ -4,10 +4,15 @@ import android.app.Activity;
 import android.content.Context;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.joanzapata.iconify.IconDrawable;
+import com.joanzapata.iconify.Iconify;
+import com.joanzapata.iconify.fonts.FontAwesomeIcons;
+import com.joanzapata.iconify.fonts.FontAwesomeModule;
 import com.spotify.sdk.android.player.Player;
 
 import java.util.HashMap;
@@ -45,22 +50,29 @@ public class Utils {
     }
 
 
-    protected static void setupFloatingActionButtons(final Context ctx, Activity a) {
+    protected static void setupFloatingActionButtons(final Context ctx, final Activity a) {
+        Iconify.with(new FontAwesomeModule());
+
         FloatingActionButton prev = (FloatingActionButton) a.findViewById(R.id.prev);
+        prev.setImageDrawable(new IconDrawable(a, FontAwesomeIcons.fa_step_backward)
+                .colorRes(R.color.colorWhite).actionBarSize());
+
         prev.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(BeatifyPlayer.beatifyPlayer != null) {
-                    if(BeatifyPlayer.beatifyPlayer.prev())
+                if (BeatifyPlayer.beatifyPlayer != null) {
+                    if (BeatifyPlayer.beatifyPlayer.prev())
                         Toast.makeText(ctx, ctx.getString(R.string.prev), Toast.LENGTH_SHORT).show();
                     else
                         Toast.makeText(ctx, ctx.getString(R.string.noprev), Toast.LENGTH_SHORT).show();
-                }
-                else Toast.makeText(ctx, ctx.getString(R.string.select_playlist), Toast.LENGTH_SHORT).show();
+                } else
+                    Toast.makeText(ctx, ctx.getString(R.string.select_playlist), Toast.LENGTH_SHORT).show();
             }
         });
 
         final FloatingActionButton play = (FloatingActionButton) a.findViewById(R.id.play);
+        play.setImageDrawable(new IconDrawable(a, FontAwesomeIcons.fa_play_circle)
+                .colorRes(R.color.colorWhite).actionBarSize());
         play.setOnClickListener(new View.OnClickListener() {
             boolean isPlaying = false;
 
@@ -71,11 +83,13 @@ public class Utils {
                     if (isPlaying) {
                         BeatifyPlayer.beatifyPlayer.pause();
                         Toast.makeText(ctx, ctx.getString(R.string.pause), Toast.LENGTH_SHORT).show();
-                        play.setImageDrawable(ctx.getResources().getDrawable(android.R.drawable.ic_media_pause));
+                        play.setImageDrawable(new IconDrawable(a, FontAwesomeIcons.fa_pause_circle)
+                                .colorRes(R.color.colorWhite).actionBarSize());
                     } else {
                         BeatifyPlayer.beatifyPlayer.play();
                         Toast.makeText(ctx, ctx.getString(R.string.play), Toast.LENGTH_SHORT).show();
-                        play.setImageDrawable(ctx.getResources().getDrawable(android.R.drawable.ic_media_play));
+                        play.setImageDrawable(new IconDrawable(a, FontAwesomeIcons.fa_play_circle)
+                                .colorRes(R.color.colorWhite).actionBarSize());
                     }
                 } else {
                     Toast.makeText(ctx, "Please select a playlist.", Toast.LENGTH_SHORT).show();
@@ -85,6 +99,8 @@ public class Utils {
         });
 
         FloatingActionButton next = (FloatingActionButton) a.findViewById(R.id.next);
+        next.setImageDrawable(new IconDrawable(a, FontAwesomeIcons.fa_step_forward)
+                .colorRes(R.color.colorWhite).actionBarSize());
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -95,5 +111,27 @@ public class Utils {
                     Toast.makeText(ctx, ctx.getString(R.string.select_playlist), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+
+    protected static void setNavigationViewIcons(Activity mthis, NavigationView nv) {
+        Iconify.with(new FontAwesomeModule());
+
+        MenuItem heart_rate = (MenuItem) nv.getMenu().findItem(R.id.nav_heart_rate);
+        heart_rate.setIcon(new IconDrawable(mthis, FontAwesomeIcons.fa_heartbeat)
+                .colorRes(R.color.colorAccent).actionBarSize());
+
+        MenuItem playlists = (MenuItem) nv.getMenu().findItem(R.id.nav_songs);
+        playlists.setIcon(new IconDrawable(mthis, FontAwesomeIcons.fa_tasks)
+                .colorRes(R.color.colorAccent).actionBarSize());
+
+        MenuItem devices = (MenuItem) nv.getMenu().findItem(R.id.nav_devices);
+        devices.setIcon(new IconDrawable(mthis, FontAwesomeIcons.fa_bluetooth_b)
+                .colorRes(R.color.colorAccent).actionBarSize());
+
+        MenuItem current_device = (MenuItem) nv.getMenu().findItem(R.id.nav_connected_device);
+        current_device.setIcon(new IconDrawable(mthis, FontAwesomeIcons.fa_exchange)
+                .colorRes(R.color.colorAccent).actionBarSize());
+
     }
 }

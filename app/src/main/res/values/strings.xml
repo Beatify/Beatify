@@ -23,6 +23,13 @@
     <string name="spotify_unknown_playlist">Unknown playlist</string>
     <string name="spotify_nr_tracks">Number of Tracks</string>
 
+    <!-- player-->
+    <string name="next">next</string>
+    <string name="prev">previous</string>
+    <string name="noprev">There is no previous track.</string>
+    <string name="play">play</string>
+    <string name="pause">pause</string>
+    <string name="select_playlist">Please select a playlist.</string>
 
 
     <!-- bluetooth -->

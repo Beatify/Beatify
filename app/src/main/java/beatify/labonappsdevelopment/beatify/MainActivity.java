@@ -1,13 +1,10 @@
 package beatify.labonappsdevelopment.beatify;
 
-import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,8 +19,16 @@ import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.ExpandableListView;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.spotify.sdk.android.player.Config;
+import com.spotify.sdk.android.player.ConnectionStateCallback;
+import com.spotify.sdk.android.player.Player;
+import com.spotify.sdk.android.player.PlayerNotificationCallback;
+import com.spotify.sdk.android.player.PlayerState;
+import com.spotify.sdk.android.player.Spotify;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +36,8 @@ import java.util.List;
 import kaaes.spotify.webapi.android.models.PlaylistSimple;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener,
+        PlayerNotificationCallback, ConnectionStateCallback {
 
     private static final int ACTIVITY_CREATE = 0;
 
@@ -41,8 +47,6 @@ public class MainActivity extends AppCompatActivity
     private ListView mListView;
     private PlaylistListAdapter mPlaylistListAdapter;
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,40 +54,7 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton prev = (FloatingActionButton) findViewById(R.id.prev);
-        prev.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
-        final FloatingActionButton play = (FloatingActionButton) findViewById(R.id.play);
-        play.setOnClickListener(new View.OnClickListener() {
-            boolean isPlaying = false;
-
-            @Override
-            public void onClick(View view) {
-                //Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                //       .setAction("Action", null).show();
-                isPlaying = !isPlaying;
-                if (isPlaying)
-                    play.setBackgroundDrawable(getResources().getDrawable(android.R.drawable.ic_media_pause));
-                else
-                    play.setBackgroundDrawable(getResources().getDrawable(android.R.drawable.ic_media_play));
-
-            }
-        });
-
-        FloatingActionButton next = (FloatingActionButton) findViewById(R.id.next);
-        next.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+        Utils.setupFloatingActionButtons(MainActivity.this, this);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -100,7 +71,6 @@ public class MainActivity extends AppCompatActivity
         registerReceiver(mGattUpdateReceiver, DeviceScanActivity.makeGattUpdateIntentFilter());
 
         Utils.displaySpoitfyUserInfo(navigationView);
-
         mListView = (ListView) findViewById(R.id.playlist_list);
     }
 
@@ -141,25 +111,8 @@ public class MainActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         // Initializes list view adapter.
-        mPlaylistListAdapter = new PlaylistListAdapter();
-        mListView.setAdapter(mPlaylistListAdapter);
-
-        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                PlaylistSimple pl = mPlaylistListAdapter.getPlaylist(position);
-                Log.d("-------", "Clicked position:" + position + " = " + pl.name);
-            }
-        });
-
-
-
-        Log.d("---------", "PL-size: " + Utils.userPlaylists.size());
-        for (PlaylistSimple pl: Utils.userPlaylists) {
-            mPlaylistListAdapter.addPlaylist(pl);
-            mPlaylistListAdapter.notifyDataSetChanged();
-        }
-
+        setupPlayer();
+        displayPlaylists();
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -168,22 +121,19 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_songs) {
-            // Handle the camera action
-        } else if (id == R.id.nav_devices) {
-            //item.setTitle("Device XY");
+        if (id == R.id.nav_songs) { /* stay at this activity. */ }
+        else if (id == R.id.nav_connected_device) { /* stay at this activity. */ }
+        else if (id == R.id.nav_devices) {
             Intent i = new Intent(this, DeviceScanActivity.class);
             startActivityForResult(i, ACTIVITY_CREATE);
-
-        } else if (id == R.id.nav_connected_device) {
-
         }
-
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+
 
     private final BroadcastReceiver mGattUpdateReceiver = new BroadcastReceiver() {
         @Override
@@ -198,6 +148,40 @@ public class MainActivity extends AppCompatActivity
         }
     };
 
+    @Override
+    public void onLoggedIn() {
+
+    }
+
+    @Override
+    public void onLoggedOut() {
+
+    }
+
+    @Override
+    public void onLoginFailed(Throwable throwable) {
+
+    }
+
+    @Override
+    public void onTemporaryError() {
+
+    }
+
+    @Override
+    public void onConnectionMessage(String s) {
+
+    }
+
+    @Override
+    public void onPlaybackEvent(EventType eventType, PlayerState playerState) {
+
+    }
+
+    @Override
+    public void onPlaybackError(ErrorType errorType, String s) {
+
+    }
 
 
     static class ViewHolder {
@@ -265,6 +249,43 @@ public class MainActivity extends AppCompatActivity
                     getResources().getString(R.string.spotify_nr_tracks) + ":" + playlist.tracks.total);
 
             return view;
+        }
+    }
+
+
+    private void setupPlayer () {
+        Config playerConfig = new Config(this, Utils.accessToken, Utils.CLIENT_ID);
+        Spotify.getPlayer(playerConfig, this, new Player.InitializationObserver() {
+            @Override
+            public void onInitialized(Player p) {
+                BeatifyPlayer.player = p;
+                BeatifyPlayer.player.addConnectionStateCallback(MainActivity.this);
+                BeatifyPlayer.player.addPlayerNotificationCallback(MainActivity.this);
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                Log.e("MainActivity", "Could not initialize player: " + throwable.getMessage());
+            }
+        });
+    }
+
+
+    private void displayPlaylists () {
+        mPlaylistListAdapter = new PlaylistListAdapter();
+        mListView.setAdapter(mPlaylistListAdapter);
+
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                BeatifyPlayer.beatifyPlayer = new BeatifyPlayer(mPlaylistListAdapter.getPlaylist(position));
+                BeatifyPlayer.beatifyPlayer.play();
+            }
+        });
+
+        for (PlaylistSimple pl: Utils.userPlaylists) {
+            mPlaylistListAdapter.addPlaylist(pl);
+            mPlaylistListAdapter.notifyDataSetChanged();
         }
     }
 }

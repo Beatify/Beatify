@@ -19,4 +19,22 @@
 
     <include layout="@layout/content_device_scan" />
 
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end">
+        <android.support.design.widget.FloatingActionButton android:id="@+id/prev"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_gravity="center" android:layout_margin="@dimen/fab_margin"
+            android:src="@android:drawable/ic_media_previous" />
+        <android.support.design.widget.FloatingActionButton android:id="@+id/play"
+            android:layout_width="100dp" android:layout_height="100dp"
+            android:layout_gravity="right|bottom" android:layout_margin="@dimen/fab_margin"
+            android:src="@android:drawable/ic_media_play" />
+        <android.support.design.widget.FloatingActionButton android:id="@+id/next"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_gravity="center" android:layout_margin="@dimen/fab_margin"
+            android:src="@android:drawable/ic_media_next" />
+    </LinearLayout>
+
 </android.support.design.widget.CoordinatorLayout>

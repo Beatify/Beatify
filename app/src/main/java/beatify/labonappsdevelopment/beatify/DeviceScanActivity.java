@@ -63,6 +63,9 @@ public class DeviceScanActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         mListView = (ListView) findViewById(R.id.gatt_services_list);
 
+
+        Utils.setupFloatingActionButtons(DeviceScanActivity.this, this);
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);

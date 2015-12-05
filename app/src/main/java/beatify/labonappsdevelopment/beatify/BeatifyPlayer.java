@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Stack;
 
+import kaaes.spotify.webapi.android.models.ArtistSimple;
 import kaaes.spotify.webapi.android.models.PlaylistSimple;
 import kaaes.spotify.webapi.android.models.PlaylistTrack;
 
@@ -75,4 +76,21 @@ public class BeatifyPlayer {
         return true;
     }
     public void pause(){ player.pause(); isPaused = true; }
+
+    public String getCurrentTrackName() {
+        return tracks.get(currentTrack).track.name;
+    }
+
+    public String getCurrentTrackArtists () {
+        StringBuilder artists = new StringBuilder();
+        for(ArtistSimple artist :tracks.get(currentTrack).track.artists) {
+            if (artists.length() > 0) artists.append(", ");
+            artists.append(artist.name);
+        }
+        return artists.toString();
+    }
+
+    public boolean existsCurrentTrack() {
+        return currentTrack != null;
+    }
 }

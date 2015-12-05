@@ -256,6 +256,9 @@ public class DeviceScanActivity extends AppCompatActivity
             Log.d(TAG, "Connect request result=" + result);
         }
 
+
+        Utils.displayCurrentTrackInfo(this);
+
     }
 
     @Override

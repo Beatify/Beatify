@@ -6,6 +6,8 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -61,8 +63,10 @@ public class Utils {
             @Override
             public void onClick(View view) {
                 if (BeatifyPlayer.beatifyPlayer != null) {
-                    if (BeatifyPlayer.beatifyPlayer.prev())
+                    if (BeatifyPlayer.beatifyPlayer.prev()) {
+                        displayCurrentTrackInfo(a);
                         Toast.makeText(ctx, ctx.getString(R.string.prev), Toast.LENGTH_SHORT).show();
+                    }
                     else
                         Toast.makeText(ctx, ctx.getString(R.string.noprev), Toast.LENGTH_SHORT).show();
                 } else
@@ -91,6 +95,7 @@ public class Utils {
                         play.setImageDrawable(new IconDrawable(a, FontAwesomeIcons.fa_play_circle)
                                 .colorRes(R.color.colorWhite).actionBarSize());
                     }
+                    displayCurrentTrackInfo(a);
                 } else {
                     Toast.makeText(ctx, "Please select a playlist.", Toast.LENGTH_SHORT).show();
                 }
@@ -107,6 +112,7 @@ public class Utils {
                 if (BeatifyPlayer.beatifyPlayer != null) {
                     BeatifyPlayer.beatifyPlayer.next();
                     Toast.makeText(ctx, ctx.getString(R.string.next), Toast.LENGTH_SHORT).show();
+                    displayCurrentTrackInfo(a);
                 } else
                     Toast.makeText(ctx, ctx.getString(R.string.select_playlist), Toast.LENGTH_SHORT).show();
             }
@@ -133,5 +139,19 @@ public class Utils {
         current_device.setIcon(new IconDrawable(mthis, FontAwesomeIcons.fa_exchange)
                 .colorRes(R.color.colorAccent).actionBarSize());
 
+    }
+
+
+    protected static void displayCurrentTrackInfo(Activity a) {
+        if(BeatifyPlayer.beatifyPlayer != null
+            && BeatifyPlayer.beatifyPlayer.existsCurrentTrack()) {
+            RelativeLayout rl = (RelativeLayout) a.findViewById(R.id.track_info);
+            TextView track_name = (TextView) a.findViewById(R.id.track_name);
+            TextView track_artists = (TextView) a.findViewById(R.id.track_artists);
+
+            rl.setVisibility(LinearLayout.VISIBLE);
+            track_name.setText(BeatifyPlayer.beatifyPlayer.getCurrentTrackName());
+            track_artists.setText(BeatifyPlayer.beatifyPlayer.getCurrentTrackArtists());
+        }
     }
 }

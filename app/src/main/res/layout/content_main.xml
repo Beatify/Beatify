@@ -10,7 +10,8 @@
     tools:showIn="@layout/app_bar_main"
     tools:context="beatify.labonappsdevelopment.beatify.MainActivity">
 
-    <ListView android:id="@+id/playlist_list"
+    <ListView
+        android:id="@+id/playlist_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 

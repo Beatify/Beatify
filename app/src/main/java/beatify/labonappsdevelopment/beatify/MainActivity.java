@@ -123,6 +123,7 @@ public class MainActivity extends AppCompatActivity
         // Initializes list view adapter.
         setupPlayer();
         displayPlaylists();
+        Utils.displayCurrentTrackInfo(this);
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -290,6 +291,7 @@ public class MainActivity extends AppCompatActivity
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 BeatifyPlayer.beatifyPlayer = new BeatifyPlayer(mPlaylistListAdapter.getPlaylist(position));
                 BeatifyPlayer.beatifyPlayer.play();
+                Utils.displayCurrentTrackInfo(MainActivity.this);
             }
         });
 

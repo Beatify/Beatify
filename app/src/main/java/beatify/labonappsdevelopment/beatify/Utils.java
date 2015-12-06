@@ -58,25 +58,6 @@ public class Utils {
     protected static void setupFloatingActionButtons(final Context ctx, final Activity a) {
         Iconify.with(new FontAwesomeModule());
 
-        FloatingActionButton prev = (FloatingActionButton) a.findViewById(R.id.prev);
-        prev.setImageDrawable(new IconDrawable(a, FontAwesomeIcons.fa_step_backward)
-                .colorRes(R.color.colorWhite).actionBarSize());
-
-        prev.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (BeatifyPlayer.beatifyPlayer != null) {
-                    if (BeatifyPlayer.beatifyPlayer.prev()) {
-                        displayCurrentTrackInfo(a);
-                        Toast.makeText(ctx, ctx.getString(R.string.prev), Toast.LENGTH_SHORT).show();
-                    }
-                    else
-                        Toast.makeText(ctx, ctx.getString(R.string.noprev), Toast.LENGTH_SHORT).show();
-                } else
-                    Toast.makeText(ctx, ctx.getString(R.string.select_playlist), Toast.LENGTH_SHORT).show();
-            }
-        });
-
         final FloatingActionButton play = (FloatingActionButton) a.findViewById(R.id.play);
 
         if(BeatifyPlayer.beatifyPlayer != null) {

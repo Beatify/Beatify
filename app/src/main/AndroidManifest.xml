@@ -43,6 +43,11 @@
             android:label="@string/title_activity_device_scan"
             android:theme="@style/AppTheme.NoActionBar" >
         </activity>
+        <activity
+            android:name=".Tracks"
+            android:label="@string/title_activity_tracks"
+            android:theme="@style/AppTheme.NoActionBar" >
+        </activity>
     </application>
 
 </manifest>

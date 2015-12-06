@@ -16,11 +16,15 @@
     <string name="available_device">Available devices</string>
     <string name="heart_rate">Heart Rate (bpm)</string>
     <string name="heart_rate_no_data">Heart Rate (bpm): No data</string>
+    <string name="no_tracks">No tracks</string>
 
     <string name="track_name_label">Track:</string>
     <string name="track_artists_label">Artists:</string>
     <string name="track_bpm_label">bpm:</string>
-
+    <string name="track_name_unknown">Unknown track</string>
+    <string name="track_album_unknown">Unknown album</string>
+    <string name="track_duration_unknown">Unknown duration</string>
+    <string name="track_artists_unknown">Unknown artists</string>
 
     <string name="spotify_id">User ID</string>
     <string name="spotify_displayname">Display name</string>
@@ -62,4 +66,5 @@
 
     <string name="action_settings">Settings</string>
     <string name="title_activity_device_scan">Bluetooth Devices</string>
+    <string name="title_activity_tracks">Tracks</string>
 </resources>

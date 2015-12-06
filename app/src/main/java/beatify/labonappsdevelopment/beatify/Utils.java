@@ -78,8 +78,19 @@ public class Utils {
         });
 
         final FloatingActionButton play = (FloatingActionButton) a.findViewById(R.id.play);
-        play.setImageDrawable(new IconDrawable(a, FontAwesomeIcons.fa_play_circle)
-                .colorRes(R.color.colorWhite).actionBarSize());
+
+        if(BeatifyPlayer.beatifyPlayer != null) {
+            if(BeatifyPlayer.beatifyPlayer.isPaused) {
+                play.setImageDrawable(new IconDrawable(a, FontAwesomeIcons.fa_play_circle)
+                        .colorRes(R.color.colorWhite).actionBarSize());
+            } else {
+                play.setImageDrawable(new IconDrawable(a, FontAwesomeIcons.fa_pause_circle)
+                        .colorRes(R.color.colorWhite).actionBarSize());
+            }
+        } else {
+            play.setImageDrawable(new IconDrawable(a, FontAwesomeIcons.fa_play_circle)
+                    .colorRes(R.color.colorWhite).actionBarSize());
+        }
         play.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

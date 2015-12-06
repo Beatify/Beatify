@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.util.Log;
+import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -19,28 +19,25 @@ import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
-import android.widget.ExpandableListView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.joanzapata.iconify.IconDrawable;
-import com.joanzapata.iconify.Iconify;
-import com.joanzapata.iconify.fonts.FontAwesomeIcons;
-import com.joanzapata.iconify.fonts.FontAwesomeModule;
-import com.spotify.sdk.android.player.Config;
 import com.spotify.sdk.android.player.ConnectionStateCallback;
-import com.spotify.sdk.android.player.Player;
 import com.spotify.sdk.android.player.PlayerNotificationCallback;
 import com.spotify.sdk.android.player.PlayerState;
-import com.spotify.sdk.android.player.Spotify;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+import kaaes.spotify.webapi.android.models.ArtistSimple;
 import kaaes.spotify.webapi.android.models.PlaylistSimple;
+import kaaes.spotify.webapi.android.models.PlaylistTrack;
 
-public class MainActivity extends AppCompatActivity
+public class Tracks extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         PlayerNotificationCallback, ConnectionStateCallback {
 
@@ -50,16 +47,18 @@ public class MainActivity extends AppCompatActivity
     private MenuItem connectedDeviceMenuItem;
 
     private ListView mListView;
-    private PlaylistListAdapter mPlaylistListAdapter;
+    private TrackListAdapter mTrackListAdapter;
+
+    private PlaylistSimple mPlaylist;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setContentView(R.layout.activity_tracks);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        Utils.setupFloatingActionButtons(MainActivity.this, this);
+        Utils.setupFloatingActionButtons(Tracks.this, this);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -78,7 +77,7 @@ public class MainActivity extends AppCompatActivity
         registerReceiver(mGattUpdateReceiver, DeviceScanActivity.makeGattUpdateIntentFilter());
 
         Utils.displaySpoitfyUserInfo(navigationView);
-        mListView = (ListView) findViewById(R.id.playlist_list);
+        mListView = (ListView) findViewById(R.id.track_list);
 
         Utils.setNavigationViewIcons(this, navigationView);
 
@@ -99,7 +98,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
+        getMenuInflater().inflate(R.menu.tracks, menu);
         return true;
     }
 
@@ -118,13 +117,10 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-
     @Override
     protected void onResume() {
         super.onResume();
-        // Initializes list view adapter.
-        setupPlayer();
-        displayPlaylists();
+        displayTracks();
         Utils.displayCurrentTrackInfo(this);
     }
 
@@ -134,8 +130,10 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_songs) { /* stay at this activity. */ }
-        else if (id == R.id.nav_connected_device) { /* stay at this activity. */ }
+        if (id == R.id.nav_songs) {
+            Intent i = new Intent(this, MainActivity.class);
+            startActivityForResult(i, ACTIVITY_CREATE);
+        } else if (id == R.id.nav_connected_device) { /* stay at this activity. */ }
         else if (id == R.id.nav_devices) {
             Intent i = new Intent(this, DeviceScanActivity.class);
             startActivityForResult(i, ACTIVITY_CREATE);
@@ -145,8 +143,6 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-
-
 
     private final BroadcastReceiver mGattUpdateReceiver = new BroadcastReceiver() {
         @Override
@@ -162,44 +158,45 @@ public class MainActivity extends AppCompatActivity
     };
 
 
-
     static class ViewHolder {
-        TextView playListName;
-        TextView playListSize;
+        TextView trackName;
+        TextView trackAlbum;
+        TextView trackArtists;
+        TextView trackDuration;
     }
 
-    private class PlaylistListAdapter extends BaseAdapter {
+    private class TrackListAdapter extends BaseAdapter {
 
-        private List<PlaylistSimple> mPlaylists;
+        private List<PlaylistTrack> mTracks;
         private LayoutInflater mInflator;
 
-        public PlaylistListAdapter() {
+        public TrackListAdapter() {
             super();
-            mPlaylists = new ArrayList<PlaylistSimple>();
-            mInflator = MainActivity.this.getLayoutInflater();
+            mTracks = new ArrayList<PlaylistTrack>();
+            mInflator = Tracks.this.getLayoutInflater();
         }
 
-        public void addPlaylist(PlaylistSimple playlist) {
-            if (!mPlaylists.contains(playlist))
-                mPlaylists.add(playlist);
+        public void addTracks(PlaylistTrack track) {
+            if (!mTracks.contains(track))
+                mTracks.add(track);
         }
 
-        public PlaylistSimple getPlaylist(int position) {
-            return mPlaylists.get(position);
+        public PlaylistTrack getTracks(int position) {
+            return mTracks.get(position);
         }
 
         public void clear() {
-            mPlaylists.clear();
+            mTracks.clear();
         }
 
         @Override
         public int getCount() {
-            return mPlaylists.size();
+            return mTracks.size();
         }
 
         @Override
         public Object getItem(int position) {
-            return mPlaylists.get(position);
+            return mTracks.get(position);
         }
 
         @Override
@@ -211,55 +208,69 @@ public class MainActivity extends AppCompatActivity
         public View getView(int position, View view, ViewGroup parent) {
             ViewHolder viewHolder;
 
-            view = mInflator.inflate(R.layout.listitem_playlist, null);
+            view = mInflator.inflate(R.layout.listitem_tracks, null);
             viewHolder = new ViewHolder();
-            viewHolder.playListName = (TextView) view.findViewById(R.id.playlist_name);
-            viewHolder.playListSize = (TextView) view.findViewById(R.id.playlist_size);
+            viewHolder.trackName = (TextView) view.findViewById(R.id.track_li_name);
+            viewHolder.trackAlbum = (TextView) view.findViewById(R.id.track_li_album);
+            viewHolder.trackDuration = (TextView) view.findViewById(R.id.track_li_duration);
+            viewHolder.trackArtists = (TextView) view.findViewById(R.id.track_li_artists);
             view.setTag(viewHolder);
 
-            PlaylistSimple playlist = mPlaylists.get(position);
-            final String name = playlist.name;
+            PlaylistTrack track = mTracks.get(position);
+            final String name = track.track.name;
             if (name != null && name.length() > 0)
-                viewHolder.playListName.setText(name);
+                viewHolder.trackName.setText(name);
             else
-                viewHolder.playListName.setText(R.string.spotify_unknown_playlist);
+                viewHolder.trackName.setText(R.string.track_name_unknown);
 
-            viewHolder.playListSize.setText(
-                    getResources().getString(R.string.spotify_nr_tracks) + ":" + playlist.tracks.total);
+            final String album = track.track.album.name;
+            if (album != null && album.length() > 0)
+                viewHolder.trackAlbum.setText(album);
+            else
+                viewHolder.trackAlbum.setText(R.string.track_album_unknown);
+
+            final Long duration = track.track.duration_ms;
+            Date date = new Date(duration);
+            DateFormat formatter = new SimpleDateFormat("mm:ss");
+            String dateFormatted = formatter.format(date);
+            if (duration != null)
+                viewHolder.trackDuration.setText(dateFormatted);
+            else
+                viewHolder.trackDuration.setText(R.string.track_duration_unknown);
+
+            StringBuilder artists = new StringBuilder();
+            for(ArtistSimple artist : track.track.artists) {
+                if (artists.length() > 0) artists.append(", ");
+                artists.append(artist.name);
+            }
+            if (artists.toString() != null)
+                viewHolder.trackArtists.setText(artists.toString());
+            else
+                viewHolder.trackArtists.setText(R.string.track_artists_unknown);
 
             return view;
         }
     }
 
+    private void displayTracks () {
 
-    private void setupPlayer () {
-        Config playerConfig = new Config(this, Utils.accessToken, Utils.CLIENT_ID);
-        Spotify.getPlayer(playerConfig, this, new Player.InitializationObserver() {
-            @Override
-            public void onInitialized(Player p) {
-                BeatifyPlayer.player = p;
-                BeatifyPlayer.player.addConnectionStateCallback(MainActivity.this);
-                BeatifyPlayer.player.addPlayerNotificationCallback(MainActivity.this);
-            }
-
-            @Override
-            public void onError(Throwable throwable) {
-                Log.e("MainActivity", "Could not initialize player: " + throwable.getMessage());
-            }
-        });
-    }
+        mTrackListAdapter = new TrackListAdapter();
+        String playlist_id = getIntent().getStringExtra("playlist_id");
+        for (PlaylistTrack t: Utils.userPlaylistsTracks.get(playlist_id)) {
+            mTrackListAdapter.addTracks(t);
+            mTrackListAdapter.notifyDataSetChanged();
+        }
 
 
-    private void displayPlaylists () {
-        mPlaylistListAdapter = new PlaylistListAdapter();
-        mListView.setAdapter(mPlaylistListAdapter);
-
+        mListView.setAdapter(mTrackListAdapter);
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                BeatifyPlayer.beatifyPlayer = new BeatifyPlayer(mPlaylistListAdapter.getPlaylist(position));
-                ((FloatingActionButton)MainActivity.this.findViewById(R.id.play)).performClick();
-                Utils.displayCurrentTrackInfo(MainActivity.this);
+                /*
+                BeatifyPlayer.beatifyPlayer = new BeatifyPlayer(mTrackListAdapter.getPlaylist(position));
+                ((FloatingActionButton)Tracks.this.findViewById(R.id.play)).performClick();
+                Utils.displayCurrentTrackInfo(Tracks.this);
+                */
             }
         });
 
@@ -267,18 +278,15 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                /*
                 Intent intentTracks = new Intent(view.getContext(), Tracks.class);
-                intentTracks.putExtra("playlist_id", mPlaylistListAdapter.getPlaylist(position).id);
                 startActivityForResult(intentTracks, ACTIVITY_CREATE);
+                */
                 return true;
             }
         });
-
-        for (PlaylistSimple pl: Utils.userPlaylists) {
-            mPlaylistListAdapter.addPlaylist(pl);
-            mPlaylistListAdapter.notifyDataSetChanged();
-        }
     }
+
 
 
     @Override
@@ -308,8 +316,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onPlaybackEvent(EventType eventType, PlayerState playerState) {
-        if (EventType.TRACK_CHANGED.equals(eventType))
-            BeatifyPlayer.beatifyPlayer.addNextTrack();
+
     }
 
     @Override

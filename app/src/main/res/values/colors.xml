@@ -1,10 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">#DE2427</color>
-    <color name="colorPrimaryDark">#be4648</color>
-    <color name="colorAccent">#666666</color>
+    <color name="colorPrimaryDark">#9b171a</color>
+    <color name="colorAccent">#333333</color>
     <color name="colorWhite">#FFFFFF</color>
     <color name="colorGreyLight">#CCCCCC</color>
     <color name="colorGreyMedium">#666666</color>
     <color name="colorGreyDark">#333333</color>
+    <color name="colorConnected">#739900</color>
+    <color name="colorDisonnected">#9b171a</color>
 </resources>
+
+
+    <!--
+
+    <color name="colorPrimary">#DE2427</color>
+    <color name="colorPrimaryDark">#be4648</color>
+    <color name="colorAccent">#666666</color>
+    -->

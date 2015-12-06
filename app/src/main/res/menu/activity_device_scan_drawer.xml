@@ -8,7 +8,6 @@
             android:icon="@android:drawable/stat_sys_data_bluetooth"
             android:title="@string/available_device" />
         <item android:id="@+id/nav_heart_rate"
-            android:icon="@mipmap/heart_rate"
             android:title="@string/heart_rate_no_data" android:checkable="false" />
     </group>
     <item android:title="@string/connected_device">

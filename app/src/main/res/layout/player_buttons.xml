@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom|end">
+
+    <android.support.design.widget.FloatingActionButton android:id="@+id/prev"
+        android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:layout_gravity="center" android:layout_margin="@dimen/fab_margin"
+        android:src="@android:drawable/ic_media_previous" />
+    <android.support.design.widget.FloatingActionButton android:id="@+id/play"
+        android:layout_width="100dp" android:layout_height="100dp"
+        android:layout_gravity="right|bottom" android:layout_margin="@dimen/fab_margin"
+        android:src="@android:drawable/ic_media_play" />
+    <android.support.design.widget.FloatingActionButton android:id="@+id/next"
+        android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:layout_gravity="center" android:layout_margin="@dimen/fab_margin"
+        android:src="@android:drawable/ic_media_next" />
+</LinearLayout>

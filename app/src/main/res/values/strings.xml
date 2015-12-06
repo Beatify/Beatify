@@ -19,6 +19,7 @@
 
     <string name="track_name_label">Track:</string>
     <string name="track_artists_label">Artists:</string>
+    <string name="track_bpm_label">bpm:</string>
 
 
     <string name="spotify_id">User ID</string>

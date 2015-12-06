@@ -17,67 +17,10 @@
             android:background="?attr/colorPrimary"
             app:popupTheme="@style/AppTheme.NoActionBar.PopupOverlay" />
 
-        <RelativeLayout
-            android:id="@+id/track_info"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:layout_marginLeft="20dp"
-            android:layout_marginBottom="20dp">
-
-            <TextView
-                android:id="@+id/track_name_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/track_name_label"
-                android:layout_margin="2dp"/>
-
-            <TextView
-                android:id="@+id/track_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/colorWhite"
-                android:layout_toRightOf="@id/track_name_label"
-                android:layout_margin="2dp"/>
-
-            <TextView
-                android:id="@+id/track_artists_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/track_artists_label"
-                android:layout_toRightOf="@id/track_name"
-                android:layout_margin="2dp"/>
-
-            <TextView
-                android:id="@+id/track_artists"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="@color/colorWhite"
-                android:layout_toRightOf="@id/track_artists_label"
-                android:layout_margin="2dp"/>
-        </RelativeLayout>
-
+        <include layout="@layout/track_info" />
     </android.support.design.widget.AppBarLayout>
 
     <include layout="@layout/content_main" />
-
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end">
-        <android.support.design.widget.FloatingActionButton android:id="@+id/prev"
-            android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:layout_gravity="center" android:layout_margin="@dimen/fab_margin"
-            android:src="@android:drawable/ic_media_previous" />
-        <android.support.design.widget.FloatingActionButton android:id="@+id/play"
-            android:layout_width="100dp" android:layout_height="100dp"
-            android:layout_gravity="right|bottom" android:layout_margin="@dimen/fab_margin"
-            android:src="@android:drawable/ic_media_play" />
-        <android.support.design.widget.FloatingActionButton android:id="@+id/next"
-            android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:layout_gravity="center" android:layout_margin="@dimen/fab_margin"
-            android:src="@android:drawable/ic_media_next" />
-    </LinearLayout>
+    <include layout="@layout/player_buttons" />
 
 </android.support.design.widget.CoordinatorLayout>

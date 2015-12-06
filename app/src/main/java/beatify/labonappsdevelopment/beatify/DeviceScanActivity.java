@@ -55,6 +55,19 @@ public class DeviceScanActivity extends AppCompatActivity
     private MenuItem heartRatMenuItem;
     private MenuItem connectedDeviceMenuItem;
 
+
+    ///
+    /// Bluetooth Device Control
+    ///
+    private BluetoothLeService mBluetoothLeService;
+    private final static String TAG = DeviceScanActivity.class.getSimpleName();
+
+    protected static String mDeviceName;
+    protected static String mDeviceAddress;
+    protected static boolean mConnected = false;
+    protected static Integer mData;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -100,18 +113,16 @@ public class DeviceScanActivity extends AppCompatActivity
         ///
         /// Bluetooth Device Control
         ///
-        final Intent intent = getIntent();
-        mDeviceName = intent.getStringExtra(EXTRAS_DEVICE_NAME);
-        mDeviceAddress = intent.getStringExtra(EXTRAS_DEVICE_ADDRESS);
-
         Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
         bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
 
         mBluetoothAdapter.startLeScan(mLeScanCallback);
         mScanning = true;
 
-        connectedDeviceMenuItem = navigationView.getMenu().findItem(R.id.nav_connected_device);
         heartRatMenuItem = navigationView.getMenu().findItem(R.id.nav_heart_rate);
+        connectedDeviceMenuItem = navigationView.getMenu().findItem(R.id.nav_connected_device);
+        if(DeviceScanActivity.mConnected)
+            connectedDeviceMenuItem.setTitle(DeviceScanActivity.mDeviceName);
 
         Utils.displaySpoitfyUserInfo(navigationView);
         Utils.setNavigationViewIcons(this, navigationView);
@@ -401,15 +412,6 @@ public class DeviceScanActivity extends AppCompatActivity
     ///
     /// Bluetooth Device Control
     ///
-    private BluetoothLeService mBluetoothLeService;
-    private final static String TAG = DeviceScanActivity.class.getSimpleName();
-    public static final String EXTRAS_DEVICE_NAME = "DEVICE_NAME";
-    public static final String EXTRAS_DEVICE_ADDRESS = "DEVICE_ADDRESS";
-
-    protected static String mDeviceName;
-    protected static String mDeviceAddress;
-    protected static boolean mConnected = false;
-    protected static Integer mData;
 
     // Code to manage Service lifecycle.
     protected final ServiceConnection mServiceConnection = new ServiceConnection() {

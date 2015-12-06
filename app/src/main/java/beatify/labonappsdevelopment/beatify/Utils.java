@@ -2,10 +2,13 @@ package beatify.labonappsdevelopment.beatify;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.WebView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -78,20 +81,17 @@ public class Utils {
         play.setImageDrawable(new IconDrawable(a, FontAwesomeIcons.fa_play_circle)
                 .colorRes(R.color.colorWhite).actionBarSize());
         play.setOnClickListener(new View.OnClickListener() {
-            boolean isPlaying = false;
-
             @Override
             public void onClick(View view) {
                 if (BeatifyPlayer.beatifyPlayer != null) {
-                    isPlaying = !isPlaying;
-                    if (isPlaying) {
-                        BeatifyPlayer.beatifyPlayer.pause();
-                        Toast.makeText(ctx, ctx.getString(R.string.pause), Toast.LENGTH_SHORT).show();
+                    if(BeatifyPlayer.beatifyPlayer.isPaused) {
+                        BeatifyPlayer.beatifyPlayer.play();
+                        Toast.makeText(ctx, ctx.getString(R.string.play), Toast.LENGTH_SHORT).show();
                         play.setImageDrawable(new IconDrawable(a, FontAwesomeIcons.fa_pause_circle)
                                 .colorRes(R.color.colorWhite).actionBarSize());
                     } else {
-                        BeatifyPlayer.beatifyPlayer.play();
-                        Toast.makeText(ctx, ctx.getString(R.string.play), Toast.LENGTH_SHORT).show();
+                        BeatifyPlayer.beatifyPlayer.pause();
+                        Toast.makeText(ctx, ctx.getString(R.string.pause), Toast.LENGTH_SHORT).show();
                         play.setImageDrawable(new IconDrawable(a, FontAwesomeIcons.fa_play_circle)
                                 .colorRes(R.color.colorWhite).actionBarSize());
                     }
@@ -146,12 +146,18 @@ public class Utils {
         if(BeatifyPlayer.beatifyPlayer != null
             && BeatifyPlayer.beatifyPlayer.existsCurrentTrack()) {
             RelativeLayout rl = (RelativeLayout) a.findViewById(R.id.track_info);
+            WebView track_img = (WebView) a.findViewById(R.id.track_img);
             TextView track_name = (TextView) a.findViewById(R.id.track_name);
             TextView track_artists = (TextView) a.findViewById(R.id.track_artists);
+            TextView track_bpm = (TextView) a.findViewById(R.id.track_bpm);
 
             rl.setVisibility(LinearLayout.VISIBLE);
             track_name.setText(BeatifyPlayer.beatifyPlayer.getCurrentTrackName());
             track_artists.setText(BeatifyPlayer.beatifyPlayer.getCurrentTrackArtists());
+            track_bpm.setText(BeatifyPlayer.beatifyPlayer.getCurrentTrackBpm());
+            track_img.loadUrl(BeatifyPlayer.beatifyPlayer.getCurrentTrackImg());
+
+
         }
     }
 }

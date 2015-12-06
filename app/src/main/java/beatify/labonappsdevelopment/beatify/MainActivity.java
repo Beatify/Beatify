@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         Utils.setupFloatingActionButtons(MainActivity.this, this);
@@ -70,8 +70,10 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        connectedDeviceMenuItem = navigationView.getMenu().findItem(R.id.nav_connected_device);
         heartRatMenuItem = navigationView.getMenu().findItem(R.id.nav_heart_rate);
+        connectedDeviceMenuItem = navigationView.getMenu().findItem(R.id.nav_connected_device);
+        if(DeviceScanActivity.mConnected)
+            connectedDeviceMenuItem.setTitle(DeviceScanActivity.mDeviceName);
 
         registerReceiver(mGattUpdateReceiver, DeviceScanActivity.makeGattUpdateIntentFilter());
 
@@ -159,40 +161,6 @@ public class MainActivity extends AppCompatActivity
         }
     };
 
-    @Override
-    public void onLoggedIn() {
-
-    }
-
-    @Override
-    public void onLoggedOut() {
-
-    }
-
-    @Override
-    public void onLoginFailed(Throwable throwable) {
-
-    }
-
-    @Override
-    public void onTemporaryError() {
-
-    }
-
-    @Override
-    public void onConnectionMessage(String s) {
-
-    }
-
-    @Override
-    public void onPlaybackEvent(EventType eventType, PlayerState playerState) {
-
-    }
-
-    @Override
-    public void onPlaybackError(ErrorType errorType, String s) {
-
-    }
 
 
     static class ViewHolder {
@@ -290,7 +258,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 BeatifyPlayer.beatifyPlayer = new BeatifyPlayer(mPlaylistListAdapter.getPlaylist(position));
-                BeatifyPlayer.beatifyPlayer.play();
+                ((FloatingActionButton)MainActivity.this.findViewById(R.id.play)).performClick();
                 Utils.displayCurrentTrackInfo(MainActivity.this);
             }
         });
@@ -308,5 +276,42 @@ public class MainActivity extends AppCompatActivity
             mPlaylistListAdapter.addPlaylist(pl);
             mPlaylistListAdapter.notifyDataSetChanged();
         }
+    }
+
+
+    @Override
+    public void onLoggedIn() {
+
+    }
+
+    @Override
+    public void onLoggedOut() {
+
+    }
+
+    @Override
+    public void onLoginFailed(Throwable throwable) {
+
+    }
+
+    @Override
+    public void onTemporaryError() {
+
+    }
+
+    @Override
+    public void onConnectionMessage(String s) {
+
+    }
+
+    @Override
+    public void onPlaybackEvent(EventType eventType, PlayerState playerState) {
+        if (EventType.TRACK_CHANGED.equals(eventType))
+            BeatifyPlayer.beatifyPlayer.addNextTrack();
+    }
+
+    @Override
+    public void onPlaybackError(ErrorType errorType, String s) {
+
     }
 }

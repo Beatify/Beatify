@@ -1,6 +1,8 @@
 package beatify.labonappsdevelopment.beatify;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.util.Log;
 
 import com.spotify.sdk.android.player.Config;
@@ -15,6 +17,7 @@ import java.util.Random;
 import java.util.Stack;
 
 import kaaes.spotify.webapi.android.models.ArtistSimple;
+import kaaes.spotify.webapi.android.models.Image;
 import kaaes.spotify.webapi.android.models.PlaylistSimple;
 import kaaes.spotify.webapi.android.models.PlaylistTrack;
 
@@ -28,7 +31,7 @@ public class BeatifyPlayer {
     private Integer currentTrack;
     private PlaylistSimple playlist;
     private List<PlaylistTrack> tracks;
-    private Boolean isPaused;
+    protected Boolean isPaused;
     protected static Player player;
 
 
@@ -36,7 +39,7 @@ public class BeatifyPlayer {
     public BeatifyPlayer(PlaylistSimple pl) {
         playlist = pl;
         tracks = Utils.userPlaylistsTracks.get(playlist.id);
-        isPaused = false;
+        isPaused = true;
         playedTracks = new Stack<Integer>();
     }
 
@@ -44,8 +47,8 @@ public class BeatifyPlayer {
         if(currentTrack != null)
             playedTracks.push(currentTrack);
 
-        currentTrack = (new Random()).nextInt(tracks.size());
-        return tracks.get(currentTrack).track.uri;
+        currentTrack = getNextTrackId();
+        return getTrackUriById(currentTrack);
     }
 
     private String previousTrack() {
@@ -57,13 +60,9 @@ public class BeatifyPlayer {
     }
 
     public void play() {
-        if(isPaused) {
-            isPaused = false;
-            player.resume();
-        } else {
-            player.play(nextTrack());
-        }
-
+        if(isPaused && existsCurrentTrack()) player.resume();
+        else player.play(nextTrack());
+        isPaused = false;
     }
 
     public void next() { player.play(nextTrack()); }
@@ -75,7 +74,7 @@ public class BeatifyPlayer {
         player.play(prevTrack);
         return true;
     }
-    public void pause(){ player.pause(); isPaused = true; }
+    public void pause() { player.pause(); isPaused = true; }
 
     public String getCurrentTrackName() {
         return tracks.get(currentTrack).track.name;
@@ -90,7 +89,29 @@ public class BeatifyPlayer {
         return artists.toString();
     }
 
+    public String getCurrentTrackBpm() {
+        //TODO implement
+        return "17";
+    }
+
+    public String getCurrentTrackImg() {
+        return tracks.get(currentTrack).track.album.images.get(2).url;
+    }
+
     public boolean existsCurrentTrack() {
         return currentTrack != null;
+    }
+
+
+    public void addNextTrack() {
+        player.queue(getTrackUriById(getNextTrackId()));
+    }
+
+    private Integer getNextTrackId() {
+        return (new Random()).nextInt(tracks.size());
+    }
+
+    private String getTrackUriById(Integer id) {
+        return tracks.get(id).track.uri;
     }
 }

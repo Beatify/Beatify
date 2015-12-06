@@ -55,10 +55,23 @@ public class Utils {
     protected static String accessToken;
 
     protected static void displaySpoitfyUserInfo (NavigationView nv) {
-        TextView spotify_id = (TextView) nv.getHeaderView(0).findViewById(R.id.spotify_id);
-        TextView spotify_displayname = (TextView) nv.getHeaderView(0).findViewById(R.id.spotify_displayname);
-        spotify_id.setText(userData.id);
-        spotify_displayname.setText(userData.display_name);
+        TextView spotify_user_name = (TextView) nv.getHeaderView(0).findViewById(R.id.spotify_user_name);
+        WebView spotify_user_img = (WebView) nv.getHeaderView(0).findViewById(R.id.spotify_user_img);
+        ImageView spotify_user_img_dummy = (ImageView) nv.getHeaderView(0).findViewById(R.id.spotify_user_img_dummy);
+
+        if(userData.display_name != null && userData.display_name.length() > 0)
+            spotify_user_name.setText(userData.display_name);
+        else
+            spotify_user_name.setText(userData.id);
+
+
+        if(userData.images.size() > 0)
+            spotify_user_img.loadUrl(userData.images.get(0).url);
+        else {
+            spotify_user_img.setVisibility(View.GONE);
+            spotify_user_img_dummy.setVisibility(View.VISIBLE);
+        }
+
     }
 
 

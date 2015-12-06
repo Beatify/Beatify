@@ -9,23 +9,29 @@
     android:theme="@style/ThemeOverlay.AppCompat.Dark" android:orientation="vertical"
     android:gravity="bottom">
 
-    <ImageView android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:paddingTop="@dimen/nav_header_vertical_spacing"
-        android:src="@android:drawable/sym_def_app_icon" android:id="@+id/imageView" />
-
-    <TextView
-        android:id="@+id/spotify_id"
-        android:layout_width="match_parent"
+    <ImageView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
-        android:text="@string/spotify_id"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+        android:src="@android:drawable/sym_def_app_icon"
+        android:id="@+id/spotify_user_img_dummy"
+        android:visibility="gone"/>
+
+    <WebView
+        android:id="@+id/spotify_user_img"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_margin="2dp"
+        android:padding="3dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"/>
 
     <TextView
-        android:id="@+id/spotify_displayname"
+        android:id="@+id/spotify_user_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-        android:text="@string/spotify_displayname"/>
+        android:text="@string/spotify_displayname"
+        android:textSize="16dp"/>
 
 </LinearLayout>

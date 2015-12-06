@@ -181,7 +181,7 @@ public class Tracks extends AppCompatActivity
                 mTracks.add(track);
         }
 
-        public PlaylistTrack getTracks(int position) {
+        public PlaylistTrack getTrack(int position) {
             return mTracks.get(position);
         }
 
@@ -256,6 +256,7 @@ public class Tracks extends AppCompatActivity
 
         mTrackListAdapter = new TrackListAdapter();
         String playlist_id = getIntent().getStringExtra("playlist_id");
+        mPlaylist = Utils.getPlaylistById(playlist_id);
         for (PlaylistTrack t: Utils.userPlaylistsTracks.get(playlist_id)) {
             mTrackListAdapter.addTracks(t);
             mTrackListAdapter.notifyDataSetChanged();
@@ -266,11 +267,12 @@ public class Tracks extends AppCompatActivity
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                /*
-                BeatifyPlayer.beatifyPlayer = new BeatifyPlayer(mTrackListAdapter.getPlaylist(position));
+                BeatifyPlayer.beatifyPlayer =
+                        new BeatifyPlayer(
+                                mPlaylist,
+                                mTrackListAdapter.getTrack(position).track.name);
                 ((FloatingActionButton)Tracks.this.findViewById(R.id.play)).performClick();
                 Utils.displayCurrentTrackInfo(Tracks.this);
-                */
             }
         });
 

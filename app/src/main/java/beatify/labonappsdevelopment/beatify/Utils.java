@@ -171,4 +171,12 @@ public class Utils {
 
         }
     }
+
+
+    protected static PlaylistSimple getPlaylistById(String id) {
+        for(PlaylistSimple pl : Utils.userPlaylists)
+            if(pl.id.equals(id))
+                return pl;
+        return null;
+    }
 }

@@ -29,25 +29,37 @@ public class BeatifyPlayer {
 
     private Stack<Integer> playedTracks;
     private Integer currentTrack;
+    private Integer startWithTrack;
     private PlaylistSimple playlist;
     private List<PlaylistTrack> tracks;
     protected Boolean isPaused;
     protected static Player player;
 
 
-    private BeatifyPlayer() {}
     public BeatifyPlayer(PlaylistSimple pl) {
         playlist = pl;
         tracks = Utils.userPlaylistsTracks.get(playlist.id);
         isPaused = true;
         playedTracks = new Stack<Integer>();
+        startWithTrack = null;
+    }
+
+    public BeatifyPlayer(PlaylistSimple pl, String trackName) {
+        this(pl);
+        for(int i = 0; i < tracks.size() && startWithTrack == null; i++)
+            if (tracks.get(i).track.name.equals(trackName))
+                startWithTrack = i;
     }
 
     private String nextTrack() {
         if(currentTrack != null)
             playedTracks.push(currentTrack);
 
-        currentTrack = getNextTrackId();
+        if(startWithTrack != null)
+            currentTrack = startWithTrack;
+        else
+            currentTrack = getNextTrackId();
+
         return getTrackUriById(currentTrack);
     }
 

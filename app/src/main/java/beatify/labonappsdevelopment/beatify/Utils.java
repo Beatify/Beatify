@@ -2,6 +2,8 @@ package beatify.labonappsdevelopment.beatify;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -20,6 +22,11 @@ import com.joanzapata.iconify.fonts.FontAwesomeIcons;
 import com.joanzapata.iconify.fonts.FontAwesomeModule;
 import com.spotify.sdk.android.player.Player;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Queue;
@@ -76,7 +83,7 @@ public class Utils {
             @Override
             public void onClick(View view) {
                 if (BeatifyPlayer.beatifyPlayer != null) {
-                    if(BeatifyPlayer.beatifyPlayer.isPaused) {
+                    if (BeatifyPlayer.beatifyPlayer.isPaused) {
                         BeatifyPlayer.beatifyPlayer.play();
                         Toast.makeText(ctx, ctx.getString(R.string.play), Toast.LENGTH_SHORT).show();
                         play.setImageDrawable(new IconDrawable(a, FontAwesomeIcons.fa_pause_circle)
@@ -148,8 +155,6 @@ public class Utils {
             track_artists.setText(BeatifyPlayer.beatifyPlayer.getCurrentTrackArtists());
             track_bpm.setText(BeatifyPlayer.beatifyPlayer.getCurrentTrackBpm());
             track_img.loadUrl(BeatifyPlayer.beatifyPlayer.getCurrentTrackImg());
-
-
         }
     }
 

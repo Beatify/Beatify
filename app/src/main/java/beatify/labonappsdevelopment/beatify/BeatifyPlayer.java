@@ -55,9 +55,10 @@ public class BeatifyPlayer {
         if(currentTrack != null)
             playedTracks.push(currentTrack);
 
-        if(startWithTrack != null)
+        if(startWithTrack != null) {
             currentTrack = startWithTrack;
-        else
+            startWithTrack = null;
+        } else
             currentTrack = getNextTrackId();
 
         return getTrackUriById(currentTrack);

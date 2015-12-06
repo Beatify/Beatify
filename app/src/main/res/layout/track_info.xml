@@ -7,17 +7,30 @@
     android:layout_marginLeft="20dp"
     android:layout_marginBottom="20dp">
 
-    <WebView
-        android:id="@+id/track_img"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        android:layout_margin="2dp" />
+
+    <RelativeLayout
+        android:id="@+id/track_img_wrapper"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:background="@drawable/img_bg"
+        android:layout_marginRight="5dp">
+
+        <WebView
+            android:id="@+id/track_img"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_margin="2dp"
+            android:padding="3dp"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"/>
+
+    </RelativeLayout>
 
     <LinearLayout
         android:id="@+id/row0"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/track_img">
+        android:layout_toRightOf="@id/track_img_wrapper">
 
         <TextView
             android:id="@+id/track_name_label"
@@ -40,7 +53,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/row0"
-        android:layout_toRightOf="@id/track_img">
+        android:layout_toRightOf="@id/track_img_wrapper">
         <TextView
             android:id="@+id/track_artists_label"
             android:layout_width="wrap_content"
@@ -61,7 +74,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/row1"
-        android:layout_toRightOf="@id/track_img">
+        android:layout_toRightOf="@id/track_img_wrapper">
         <TextView
             android:id="@+id/track_bpm_label"
             android:layout_width="wrap_content"

@@ -51,11 +51,13 @@ public class MainActivity extends AppCompatActivity
 
     private ListView mListView;
     private PlaylistListAdapter mPlaylistListAdapter;
+    protected static Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mContext = this;
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 

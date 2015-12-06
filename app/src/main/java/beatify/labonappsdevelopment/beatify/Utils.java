@@ -38,7 +38,7 @@ public class Utils {
     //store spotify data
     protected static UserPrivate userData;
     protected static List<PlaylistSimple> userPlaylists;
-    protected static HashMap<String, List<PlaylistTrack>> userPlaylistsTracks;
+    protected static HashMap<String, HashMap<Integer, List<PlaylistTrack>>> userPlaylistsTracks;
 
     protected static final String CLIENT_ID = "e0350925a3624229875cb15856fb7567";
     protected static final int REQUEST_CODE = 1337;
@@ -62,14 +62,14 @@ public class Utils {
         prev.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (BeatifyPlayer.beatifyPlayer != null) {
+/*                if (BeatifyPlayer.beatifyPlayer != null) {
                     if (BeatifyPlayer.beatifyPlayer.prev()) {
                         displayCurrentTrackInfo(a);
                         Toast.makeText(ctx, ctx.getString(R.string.prev), Toast.LENGTH_SHORT).show();
                     }
                     else
                         Toast.makeText(ctx, ctx.getString(R.string.noprev), Toast.LENGTH_SHORT).show();
-                } else
+                } else */
                     Toast.makeText(ctx, ctx.getString(R.string.select_playlist), Toast.LENGTH_SHORT).show();
             }
         });

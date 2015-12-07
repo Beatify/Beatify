@@ -31,6 +31,7 @@
     <string name="spotify_displayname">Display name</string>
     <string name="spotify_unknown_playlist">Unknown playlist</string>
     <string name="spotify_nr_tracks">Number of Tracks</string>
+    <string name="spotify_reload">Refresh</string>
 
     <!-- player-->
     <string name="next">next</string>

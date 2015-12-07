@@ -34,8 +34,6 @@ import retrofit.client.Response;
 
 public class StartUp extends AppCompatActivity {
     private static final String REDIRECT_URI = "beatify-login://callback";
-    private static final int ACTIVITY_CREATE = 0;
-    private static Intent itentMainActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,8 +50,6 @@ public class StartUp extends AppCompatActivity {
 
         Utils.userPlaylists = new LinkedList<PlaylistSimple>();
         Utils.userPlaylistsTracks = new HashMap<String, List<PlaylistTrack>>();
-
-        itentMainActivity = new Intent(this, MainActivity.class);
     }
 
 
@@ -70,46 +66,8 @@ public class StartUp extends AppCompatActivity {
                 Utils.api = new SpotifyApi();
                 Utils.api.setAccessToken(Utils.accessToken);
                 Utils.spotify = Utils.api.getService();
+                Utils.getSpotifyData(this, new Intent(this, MainActivity.class));
 
-                //get user_id
-                Utils.spotify.getMe(new Callback<UserPrivate>() {
-                    @Override
-                    public void success(final UserPrivate userPrivate, retrofit.client.Response response) {
-                        Log.d("User success", userPrivate.id);
-                        Utils.userData = userPrivate;
-                        //get playlists
-                        Utils.spotify.getPlaylists(userPrivate.id, new Callback<Pager<PlaylistSimple>>() {
-                            @Override
-                            public void success(Pager<PlaylistSimple> playlistSimplePager, Response response) {
-                                List<PlaylistSimple> playlists = playlistSimplePager.items;
-                                Utils.userPlaylists = playlists;
-                                for (PlaylistSimple p : playlists) {
-                                    Utils.spotify.getPlaylistTracks(userPrivate.id, p.id, new Callback<Pager<PlaylistTrack>>() {
-                                        @Override
-                                        public void success(Pager<PlaylistTrack> playlistTrackPager, Response response) {
-                                            List<PlaylistTrack> tracks = playlistTrackPager.items;
-                                            Utils.userPlaylistsTracks.put(response.getUrl().split("/")[7], tracks);
-                                        }
-                                        @Override
-                                        public void failure(RetrofitError error) {
-                                            Log.e("TEST", "Could not get playlist tracks");
-                                        }
-                                    });
-                                }
-                                startActivityForResult(itentMainActivity, ACTIVITY_CREATE);
-                            }
-                            @Override
-                            public void failure(RetrofitError error) {
-                                Log.e("TEST", "Could not get playlists");
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void failure(RetrofitError error) {
-                        Log.e("TEST", "Could not get userdata");
-                    }
-                });
             }
         }
 

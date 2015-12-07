@@ -2,6 +2,7 @@ package beatify.labonappsdevelopment.beatify;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
@@ -10,6 +11,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
@@ -37,9 +39,13 @@ import java.util.Random;
 
 import kaaes.spotify.webapi.android.SpotifyApi;
 import kaaes.spotify.webapi.android.SpotifyService;
+import kaaes.spotify.webapi.android.models.Pager;
 import kaaes.spotify.webapi.android.models.PlaylistSimple;
 import kaaes.spotify.webapi.android.models.PlaylistTrack;
 import kaaes.spotify.webapi.android.models.UserPrivate;
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 /**
  * Created by mpreis on 04/12/15.
@@ -187,4 +193,49 @@ public class Utils {
                 return pl;
         return null;
     }
+
+
+
+    protected static void getSpotifyData(final Activity a, final Intent intent) {
+        //get user_id
+        Utils.spotify.getMe(new Callback<UserPrivate>() {
+            @Override
+            public void success(final UserPrivate userPrivate, retrofit.client.Response response) {
+                Log.d("User success", userPrivate.id);
+                Utils.userData = userPrivate;
+                //get playlists
+                Utils.spotify.getPlaylists(userPrivate.id, new Callback<Pager<PlaylistSimple>>() {
+                    @Override
+                    public void success(Pager<PlaylistSimple> playlistSimplePager, Response response) {
+                        List<PlaylistSimple> playlists = playlistSimplePager.items;
+                        Utils.userPlaylists = playlists;
+                        for (PlaylistSimple p : playlists) {
+                            Utils.spotify.getPlaylistTracks(userPrivate.id, p.id, new Callback<Pager<PlaylistTrack>>() {
+                                @Override
+                                public void success(Pager<PlaylistTrack> playlistTrackPager, Response response) {
+                                    List<PlaylistTrack> tracks = playlistTrackPager.items;
+                                    Utils.userPlaylistsTracks.put(response.getUrl().split("/")[7], tracks);
+                                }
+                                @Override
+                                public void failure(RetrofitError error) {
+                                    Log.e("TEST", "Could not get playlist tracks");
+                                }
+                            });
+                        }
+                        a.startActivityForResult(intent, ACTIVITY_CREATE);
+                    }
+                    @Override
+                    public void failure(RetrofitError error) {
+                        Log.e("TEST", "Could not get playlists");
+                    }
+                });
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                Log.e("TEST", "Could not get userdata");
+            }
+        });
+    }
+
 }

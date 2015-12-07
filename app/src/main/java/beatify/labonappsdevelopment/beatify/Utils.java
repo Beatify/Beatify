@@ -7,6 +7,9 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
@@ -54,15 +57,18 @@ public class Utils {
     protected static final int REQUEST_CODE = 1337;
     protected static String accessToken;
 
+    protected static final int ACTIVITY_CREATE = 0;
+
     protected static void displaySpoitfyUserInfo (NavigationView nv) {
         TextView spotify_user_name = (TextView) nv.getHeaderView(0).findViewById(R.id.spotify_user_name);
         WebView spotify_user_img = (WebView) nv.getHeaderView(0).findViewById(R.id.spotify_user_img);
         ImageView spotify_user_img_dummy = (ImageView) nv.getHeaderView(0).findViewById(R.id.spotify_user_img_dummy);
 
-        if(userData.display_name != null && userData.display_name.length() > 0)
-            spotify_user_name.setText(userData.display_name);
-        else
-            spotify_user_name.setText(userData.id);
+        if(userData != null)
+            if(userData.display_name != null && userData.display_name.length() > 0)
+                spotify_user_name.setText(userData.display_name);
+            else
+                spotify_user_name.setText(userData.id);
 
 
         if(userData.images.size() > 0)
@@ -82,14 +88,14 @@ public class Utils {
 
         if(BeatifyPlayer.beatifyPlayer != null) {
             if(BeatifyPlayer.beatifyPlayer.isPaused) {
-                play.setImageDrawable(new IconDrawable(a, FontAwesomeIcons.fa_play_circle)
+                play.setImageDrawable(new IconDrawable(a, FontAwesomeIcons.fa_play)
                         .colorRes(R.color.colorWhite).actionBarSize());
             } else {
-                play.setImageDrawable(new IconDrawable(a, FontAwesomeIcons.fa_pause_circle)
+                play.setImageDrawable(new IconDrawable(a, FontAwesomeIcons.fa_pause)
                         .colorRes(R.color.colorWhite).actionBarSize());
             }
         } else {
-            play.setImageDrawable(new IconDrawable(a, FontAwesomeIcons.fa_play_circle)
+            play.setImageDrawable(new IconDrawable(a, FontAwesomeIcons.fa_play)
                     .colorRes(R.color.colorWhite).actionBarSize());
         }
         play.setOnClickListener(new View.OnClickListener() {
@@ -99,12 +105,12 @@ public class Utils {
                     if (BeatifyPlayer.beatifyPlayer.isPaused) {
                         BeatifyPlayer.beatifyPlayer.play();
                         Toast.makeText(ctx, ctx.getString(R.string.play), Toast.LENGTH_SHORT).show();
-                        play.setImageDrawable(new IconDrawable(a, FontAwesomeIcons.fa_pause_circle)
+                        play.setImageDrawable(new IconDrawable(a, FontAwesomeIcons.fa_pause)
                                 .colorRes(R.color.colorWhite).actionBarSize());
                     } else {
                         BeatifyPlayer.beatifyPlayer.pause();
                         Toast.makeText(ctx, ctx.getString(R.string.pause), Toast.LENGTH_SHORT).show();
-                        play.setImageDrawable(new IconDrawable(a, FontAwesomeIcons.fa_play_circle)
+                        play.setImageDrawable(new IconDrawable(a, FontAwesomeIcons.fa_play)
                                 .colorRes(R.color.colorWhite).actionBarSize());
                     }
                     displayCurrentTrackInfo(a);
@@ -151,6 +157,9 @@ public class Utils {
         current_device.setIcon(new IconDrawable(mthis, FontAwesomeIcons.fa_exchange)
                 .colorRes(R.color.colorAccent).actionBarSize());
 
+        MenuItem about = (MenuItem) nv.getMenu().findItem(R.id.nav_about);
+        about.setIcon(new IconDrawable(mthis, FontAwesomeIcons.fa_info)
+                .colorRes(R.color.colorAccent).actionBarSize());
     }
 
 

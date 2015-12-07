@@ -50,8 +50,6 @@ public class DeviceScanActivity extends AppCompatActivity
     // Stops scanning after 10 seconds.
     private static final long SCAN_PERIOD = 10000;
 
-    private static final int ACTIVITY_CREATE = 0;
-
     private MenuItem heartRatMenuItem;
     private MenuItem connectedDeviceMenuItem;
 
@@ -184,11 +182,10 @@ public class DeviceScanActivity extends AppCompatActivity
 
         if (id == R.id.nav_songs) {
             Intent i = new Intent(this, MainActivity.class);
-            startActivityForResult(i, ACTIVITY_CREATE);
-        } else if (id == R.id.nav_devices) {
-
-        } else if (id == R.id.nav_connected_device) {
-
+            startActivityForResult(i, Utils.ACTIVITY_CREATE);
+        } else if (id == R.id.nav_about) {
+            Intent i = new Intent(this, AboutActivity.class);
+            startActivityForResult(i, Utils.ACTIVITY_CREATE);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

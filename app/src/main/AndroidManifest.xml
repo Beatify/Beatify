@@ -48,6 +48,11 @@
             android:label="@string/title_activity_tracks"
             android:theme="@style/AppTheme.NoActionBar" >
         </activity>
+        <activity
+            android:name=".AboutActivity"
+            android:label="@string/title_activity_about"
+            android:theme="@style/AppTheme.NoActionBar" >
+        </activity>
     </application>
 
 </manifest>

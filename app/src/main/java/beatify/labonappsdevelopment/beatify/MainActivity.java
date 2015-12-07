@@ -44,10 +44,7 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         PlayerNotificationCallback, ConnectionStateCallback {
 
-    private static final int ACTIVITY_CREATE = 0;
-
     private MenuItem heartRatMenuItem;
-    private MenuItem connectedDeviceMenuItem;
 
     private ListView mListView;
     private PlaylistListAdapter mPlaylistListAdapter;
@@ -56,6 +53,7 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -71,18 +69,15 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         heartRatMenuItem = navigationView.getMenu().findItem(R.id.nav_heart_rate);
-        connectedDeviceMenuItem = navigationView.getMenu().findItem(R.id.nav_connected_device);
+        MenuItem connectedDeviceMenuItem = navigationView.getMenu().findItem(R.id.nav_connected_device);
         if(DeviceScanActivity.mConnected)
             connectedDeviceMenuItem.setTitle(DeviceScanActivity.mDeviceName);
 
-        registerReceiver(mGattUpdateReceiver, DeviceScanActivity.makeGattUpdateIntentFilter());
-
         Utils.displaySpoitfyUserInfo(navigationView);
-        mListView = (ListView) findViewById(R.id.playlist_list);
-
         Utils.setNavigationViewIcons(this, navigationView);
 
         TextView emptyText = (TextView)findViewById(android.R.id.empty);
+        mListView = (ListView) findViewById(R.id.playlist_list);
         mListView.setEmptyView(emptyText);
     }
 
@@ -123,6 +118,7 @@ public class MainActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         // Initializes list view adapter.
+        registerReceiver(mGattUpdateReceiver, DeviceScanActivity.makeGattUpdateIntentFilter());
         setupPlayer();
         displayPlaylists();
         Utils.displayCurrentTrackInfo(this);
@@ -134,11 +130,12 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_songs) { /* stay at this activity. */ }
-        else if (id == R.id.nav_connected_device) { /* stay at this activity. */ }
-        else if (id == R.id.nav_devices) {
+        if (id == R.id.nav_devices) {
             Intent i = new Intent(this, DeviceScanActivity.class);
-            startActivityForResult(i, ACTIVITY_CREATE);
+            startActivityForResult(i, Utils.ACTIVITY_CREATE);
+        } else if (id == R.id.nav_about) {
+            Intent i = new Intent(this, AboutActivity.class);
+            startActivityForResult(i, Utils.ACTIVITY_CREATE);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -269,7 +266,7 @@ public class MainActivity extends AppCompatActivity
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intentTracks = new Intent(view.getContext(), Tracks.class);
                 intentTracks.putExtra("playlist_id", mPlaylistListAdapter.getPlaylist(position).id);
-                startActivityForResult(intentTracks, ACTIVITY_CREATE);
+                startActivityForResult(intentTracks, Utils.ACTIVITY_CREATE);
                 return true;
             }
         });

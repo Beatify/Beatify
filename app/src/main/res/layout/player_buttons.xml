@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom|end">
+
+    <LinearLayout
+        android:id="@+id/btn_row0"
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <android.support.design.widget.FloatingActionButton android:id="@+id/next"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_margin="@dimen/fab_margin"
+            android:src="@android:drawable/ic_media_next" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/btn_row1"
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btn_row0">
+
+        <android.support.design.widget.FloatingActionButton android:id="@+id/play"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_margin="@dimen/fab_margin"
+            android:src="@android:drawable/ic_media_play" />
+
+    </LinearLayout>
+
+
+</RelativeLayout>
+

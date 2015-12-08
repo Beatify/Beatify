@@ -50,10 +50,21 @@ public class DeviceScanActivity extends AppCompatActivity
     // Stops scanning after 10 seconds.
     private static final long SCAN_PERIOD = 10000;
 
-    private static final int ACTIVITY_CREATE = 0;
-
     private MenuItem heartRatMenuItem;
     private MenuItem connectedDeviceMenuItem;
+
+
+    ///
+    /// Bluetooth Device Control
+    ///
+    private BluetoothLeService mBluetoothLeService;
+    private final static String TAG = DeviceScanActivity.class.getSimpleName();
+
+    protected static String mDeviceName;
+    protected static String mDeviceAddress;
+    protected static boolean mConnected = false;
+    protected static Integer mData;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,18 +111,16 @@ public class DeviceScanActivity extends AppCompatActivity
         ///
         /// Bluetooth Device Control
         ///
-        final Intent intent = getIntent();
-        mDeviceName = intent.getStringExtra(EXTRAS_DEVICE_NAME);
-        mDeviceAddress = intent.getStringExtra(EXTRAS_DEVICE_ADDRESS);
-
         Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
         bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
 
         mBluetoothAdapter.startLeScan(mLeScanCallback);
         mScanning = true;
 
-        connectedDeviceMenuItem = navigationView.getMenu().findItem(R.id.nav_connected_device);
         heartRatMenuItem = navigationView.getMenu().findItem(R.id.nav_heart_rate);
+        connectedDeviceMenuItem = navigationView.getMenu().findItem(R.id.nav_connected_device);
+        if(DeviceScanActivity.mConnected)
+            connectedDeviceMenuItem.setTitle(DeviceScanActivity.mDeviceName);
 
         Utils.displaySpoitfyUserInfo(navigationView);
         Utils.setNavigationViewIcons(this, navigationView);
@@ -173,11 +182,10 @@ public class DeviceScanActivity extends AppCompatActivity
 
         if (id == R.id.nav_songs) {
             Intent i = new Intent(this, MainActivity.class);
-            startActivityForResult(i, ACTIVITY_CREATE);
-        } else if (id == R.id.nav_devices) {
-
-        } else if (id == R.id.nav_connected_device) {
-
+            startActivityForResult(i, Utils.ACTIVITY_CREATE);
+        } else if (id == R.id.nav_about) {
+            Intent i = new Intent(this, AboutActivity.class);
+            startActivityForResult(i, Utils.ACTIVITY_CREATE);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -401,15 +409,6 @@ public class DeviceScanActivity extends AppCompatActivity
     ///
     /// Bluetooth Device Control
     ///
-    private BluetoothLeService mBluetoothLeService;
-    private final static String TAG = DeviceScanActivity.class.getSimpleName();
-    public static final String EXTRAS_DEVICE_NAME = "DEVICE_NAME";
-    public static final String EXTRAS_DEVICE_ADDRESS = "DEVICE_ADDRESS";
-
-    protected static String mDeviceName;
-    protected static String mDeviceAddress;
-    protected static boolean mConnected = false;
-    protected static Integer mData;
 
     // Code to manage Service lifecycle.
     protected final ServiceConnection mServiceConnection = new ServiceConnection() {

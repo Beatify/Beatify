@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/track_info"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:visibility="gone"
+    android:layout_marginLeft="20dp"
+    android:layout_marginBottom="20dp">
+
+
+    <RelativeLayout
+        android:id="@+id/track_img_wrapper"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:background="@drawable/img_bg"
+        android:layout_marginRight="5dp">
+
+        <WebView
+            android:id="@+id/track_img"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_margin="2dp"
+            android:padding="3dp"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"/>
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/row0"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/track_img_wrapper">
+
+        <TextView
+            android:id="@+id/track_name_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/track_name_label"
+            android:layout_margin="2dp"/>
+
+        <TextView
+            android:id="@+id/track_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorWhite"
+            android:layout_margin="2dp"/>
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/row1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/row0"
+        android:layout_toRightOf="@id/track_img_wrapper">
+        <TextView
+            android:id="@+id/track_artists_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/track_artists_label"
+            android:layout_margin="2dp"/>
+
+        <TextView
+            android:id="@+id/track_artists"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorWhite"
+            android:layout_margin="2dp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/row2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/row1"
+        android:layout_toRightOf="@id/track_img_wrapper">
+        <TextView
+            android:id="@+id/track_bpm_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/track_bpm_label"
+            android:layout_margin="2dp"/>
+
+        <TextView
+            android:id="@+id/track_bpm"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorWhite"
+            android:layout_margin="2dp"
+            android:text="@string/no_data"/>
+    </LinearLayout>
+</RelativeLayout>

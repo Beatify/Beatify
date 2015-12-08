@@ -16,15 +16,22 @@
     <string name="available_device">Available devices</string>
     <string name="heart_rate">Heart Rate (bpm)</string>
     <string name="heart_rate_no_data">Heart Rate (bpm): No data</string>
+    <string name="no_tracks">No tracks</string>
+    <string name="about">About</string>
 
     <string name="track_name_label">Track:</string>
     <string name="track_artists_label">Artists:</string>
-
+    <string name="track_bpm_label">bpm:</string>
+    <string name="track_name_unknown">Unknown track</string>
+    <string name="track_album_unknown">Unknown album</string>
+    <string name="track_duration_unknown">Unknown duration</string>
+    <string name="track_artists_unknown">Unknown artists</string>
 
     <string name="spotify_id">User ID</string>
     <string name="spotify_displayname">Display name</string>
     <string name="spotify_unknown_playlist">Unknown playlist</string>
     <string name="spotify_nr_tracks">Number of Tracks</string>
+    <string name="spotify_reload">Refresh</string>
 
     <!-- player-->
     <string name="next">next</string>
@@ -61,4 +68,49 @@
 
     <string name="action_settings">Settings</string>
     <string name="title_activity_device_scan">Bluetooth Devices</string>
+    <string name="title_activity_tracks">Tracks</string>
+    <string name="title_activity_about">About</string>
+
+    <!-- about -->
+    <string name="copyright">All rights reserved.</string>
+    <string name="devs_label">Developers</string>
+    <string name="devs_th">Thomas Hütter (<email>t@h.com</email>)</string>
+    <string name="devs_fs">Mehmet Furkan Şahin (<email>f@s.com</email>)</string>
+    <string name="devs_mp">Mario Preishuber (<email>m@p.com</email>)</string>
+    <string name="licence_label">Licnece</string>
+    <string name="licence">"
+        The MIT License (MIT)
+
+        Copyright (c) 2015 Beatify
+
+        Permission is hereby granted, free of charge, to any person obtaining a copy
+        of this software and associated documentation files (the "Software"), to deal
+        in the Software without restriction, including without limitation the rights
+        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+        copies of the Software, and to permit persons to whom the Software is
+        furnished to do so, subject to the following conditions:
+
+        The above copyright notice and this permission notice shall be included in all
+        copies or substantial portions of the Software.
+
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+        SOFTWARE."
+    </string>
+
+    <string name="licence_add_label">Licence additions</string>
+    <string name="licence_add_iconify">"
+        It uses Iconify by Joan Zapata, Damien Villeneuve, and Mike Penz,
+        licensed under the Apache License, Version 2.0, which may be obtain at
+        http://www.apache.org/licenses/LICENSE-2.0 ."
+    </string>
+    <string name="licence_add_awesomefont">"
+        It uses FontAwesome font by Dave Gandy,
+        licensed under OFL 1.1, which is compatible with this library's license.
+        http://scripts.sil.org/OFL"
+    </string>
 </resources>

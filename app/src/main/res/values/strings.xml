@@ -74,11 +74,11 @@
     <!-- about -->
     <string name="copyright">All rights reserved.</string>
     <string name="devs_label">Developers</string>
-    <string name="devs_th">Thomas Hütter (<email>t@h.com</email>)</string>
-    <string name="devs_fs">Mehmet Furkan Şahin (<email>f@s.com</email>)</string>
-    <string name="devs_mp">Mario Preishuber (<email>m@p.com</email>)</string>
-    <string name="licence_label">Licnece</string>
-    <string name="licence">"
+    <string name="devs_th">Thomas Hütter (<email>thomas.huetter@cs.uni-salzburg.at</email>)</string>
+    <string name="devs_fs">Mehmet Furkan Şahin (<email>sahinffurkan@gmail.com</email>)</string>
+    <string name="devs_mp">Mario Preishuber (<email>mario.preishuber@cs.uni-salzburg.at</email>)</string>
+    <string name="license_label">License</string>
+    <string name="license">"
         The MIT License (MIT)
 
         Copyright (c) 2015 Beatify
@@ -102,15 +102,25 @@
         SOFTWARE."
     </string>
 
-    <string name="licence_add_label">Licence additions</string>
-    <string name="licence_add_iconify">"
-        It uses Iconify by Joan Zapata, Damien Villeneuve, and Mike Penz,
+    <string name="license_add_label">License additions</string>
+    <string name="license_add_iconify">"
+        Beatify uses Iconify by Joan Zapata, Damien Villeneuve, and Mike Penz,
         licensed under the Apache License, Version 2.0, which may be obtain at
         http://www.apache.org/licenses/LICENSE-2.0 ."
     </string>
-    <string name="licence_add_awesomefont">"
-        It uses FontAwesome font by Dave Gandy,
+    <string name="license_add_awesomefont">"
+        Beatify uses FontAwesome font by Dave Gandy,
         licensed under OFL 1.1, which is compatible with this library's license.
         http://scripts.sil.org/OFL"
+    </string>
+    <string name="license_add_kaaes">"
+        Beatify uses spotify-web-api-android by kaaes,
+        licensed under MIT.
+        https://github.com/kaaes/spotify-web-api-android"
+    </string>
+    <string name="license_add_echonest">"
+        Beatify uses Echo Nest API by Echo Nest,
+        licensed under special conditions, which can be found on the company's webpage.
+        http://the.echonest.com/"
     </string>
 </resources>

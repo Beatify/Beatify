@@ -47,7 +47,7 @@
     <string name="label_data">Data:</string>
     <string name="label_device_address">Device address:</string>
     <string name="label_state">State:</string>
-    <string name="no_data">No data</string>
+    <string name="no_data">No data available</string>
     <string name="connected">Connected</string>
     <string name="disconnected">Disconnected</string>
     <string name="title_devices">BLE Device Scan</string>
@@ -123,4 +123,8 @@
         licensed under special conditions, which can be found on the company's webpage.
         http://the.echonest.com/"
     </string>
+
+    <string name="le_bluetooth_warning_label">Info</string>
+    <string name="le_bluetooth_warning">To discover how magnificent Beatify is we recommend you to use a LowEnergy Bluetooth device.</string>
+
 </resources>

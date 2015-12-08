@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -22,16 +23,10 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.spotify.sdk.android.player.ConnectionStateCallback;
-import com.spotify.sdk.android.player.PlayerNotificationCallback;
-import com.spotify.sdk.android.player.PlayerState;
-
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 import kaaes.spotify.webapi.android.models.ArtistSimple;
@@ -39,8 +34,7 @@ import kaaes.spotify.webapi.android.models.PlaylistSimple;
 import kaaes.spotify.webapi.android.models.PlaylistTrack;
 
 public class TracksActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener,
-        PlayerNotificationCallback, ConnectionStateCallback {
+        implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final int ACTIVITY_CREATE = 0;
 
@@ -95,31 +89,11 @@ public class TracksActivity extends AppCompatActivity
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        //if (id == R.id.action_settings) {
-        //    return true;
-        //}
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
     protected void onResume() {
         super.onResume();
         displayTracks();
-        Utils.displayCurrentTrackInfo(this);
+        Utils.currentActivity = this;
+        Utils.displayCurrentTrackInfo();
         registerReceiver(mGattUpdateReceiver, DeviceScanActivity.makeGattUpdateIntentFilter());
     }
 
@@ -275,57 +249,7 @@ public class TracksActivity extends AppCompatActivity
                                 mPlaylist,
                                 mTrackListAdapter.getTrack(position).track.name);
                 ((FloatingActionButton)TracksActivity.this.findViewById(R.id.play)).performClick();
-                Utils.displayCurrentTrackInfo(TracksActivity.this);
             }
         });
-
-        mListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                /*
-                Intent intentTracks = new Intent(view.getContext(), Tracks.class);
-                startActivityForResult(intentTracks, ACTIVITY_CREATE);
-                */
-                return true;
-            }
-        });
-    }
-
-
-
-    @Override
-    public void onLoggedIn() {
-
-    }
-
-    @Override
-    public void onLoggedOut() {
-
-    }
-
-    @Override
-    public void onLoginFailed(Throwable throwable) {
-
-    }
-
-    @Override
-    public void onTemporaryError() {
-
-    }
-
-    @Override
-    public void onConnectionMessage(String s) {
-
-    }
-
-    @Override
-    public void onPlaybackEvent(EventType eventType, PlayerState playerState) {
-
-    }
-
-    @Override
-    public void onPlaybackError(ErrorType errorType, String s) {
-
     }
 }

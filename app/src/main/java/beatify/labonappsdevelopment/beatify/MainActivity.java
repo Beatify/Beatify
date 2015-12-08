@@ -22,12 +22,7 @@ import android.widget.BaseAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.joanzapata.iconify.IconDrawable;
-import com.joanzapata.iconify.Iconify;
-import com.joanzapata.iconify.fonts.FontAwesomeIcons;
-import com.joanzapata.iconify.fonts.FontAwesomeModule;
 import com.spotify.sdk.android.player.Config;
 import com.spotify.sdk.android.player.ConnectionStateCallback;
 import com.spotify.sdk.android.player.Player;
@@ -92,6 +87,9 @@ public class MainActivity extends AppCompatActivity
         } else {
             super.onBackPressed();
         }
+
+        if(mGattUpdateReceiver != null)
+            unregisterReceiver(mGattUpdateReceiver);
     }
 
     @Override
@@ -124,7 +122,8 @@ public class MainActivity extends AppCompatActivity
         registerReceiver(mGattUpdateReceiver, DeviceScanActivity.makeGattUpdateIntentFilter());
         setupPlayer();
         displayPlaylists();
-        Utils.displayCurrentTrackInfo(this);
+        Utils.currentActivity = this;
+        Utils.displayCurrentTrackInfo();
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -136,6 +135,7 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.nav_devices) {
             Intent i = new Intent(this, DeviceScanActivity.class);
             startActivityForResult(i, Utils.ACTIVITY_CREATE);
+
         } else if (id == R.id.nav_about) {
             Intent i = new Intent(this, AboutActivity.class);
             startActivityForResult(i, Utils.ACTIVITY_CREATE);
@@ -160,8 +160,6 @@ public class MainActivity extends AppCompatActivity
             }
         }
     };
-
-
 
     static class ViewHolder {
         TextView playListName;
@@ -258,8 +256,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 BeatifyPlayer.beatifyPlayer = new BeatifyPlayer(mPlaylistListAdapter.getPlaylist(position));
-                ((FloatingActionButton)MainActivity.this.findViewById(R.id.play)).performClick();
-                Utils.displayCurrentTrackInfo(MainActivity.this);
+                ((FloatingActionButton) MainActivity.this.findViewById(R.id.play)).performClick();
             }
         });
 
@@ -274,6 +271,7 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+        if(Utils.userPlaylists != null)
         for (PlaylistSimple pl: Utils.userPlaylists) {
             mPlaylistListAdapter.addPlaylist(pl);
             mPlaylistListAdapter.notifyDataSetChanged();
@@ -308,8 +306,13 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onPlaybackEvent(EventType eventType, PlayerState playerState) {
-
+        if (EventType.TRACK_CHANGED.equals(eventType)) {
+            BeatifyPlayer.beatifyPlayer.addNextTrack();
+        } else if(EventType.AUDIO_FLUSH.equals(eventType)) {
+            Utils.displayCurrentTrackInfo();
+        }
     }
+
 
     @Override
     public void onPlaybackError(ErrorType errorType, String s) {

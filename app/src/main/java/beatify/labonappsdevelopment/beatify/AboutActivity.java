@@ -56,7 +56,8 @@ public class AboutActivity extends AppCompatActivity
         super.onResume();
         // Initializes list view adapter.
         registerReceiver(mGattUpdateReceiver, DeviceScanActivity.makeGattUpdateIntentFilter());
-        Utils.displayCurrentTrackInfo(this);
+        Utils.currentActivity = this;
+        Utils.displayCurrentTrackInfo();
     }
 
     @Override

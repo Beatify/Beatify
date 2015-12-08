@@ -1,5 +1,7 @@
 package beatify.labonappsdevelopment.beatify;
 
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -24,8 +26,7 @@ public class StartUp extends AppCompatActivity {
         setContentView(R.layout.activity_start_up);
 
         AuthenticationRequest.Builder builder = new AuthenticationRequest.Builder(Utils.CLIENT_ID,
-                AuthenticationResponse.Type.TOKEN,
-                REDIRECT_URI);
+                AuthenticationResponse.Type.TOKEN, REDIRECT_URI);
         builder.setScopes(new String[]{"user-read-private", "streaming"});
         AuthenticationRequest request = builder.build();
 
@@ -53,5 +54,12 @@ public class StartUp extends AppCompatActivity {
             }
         }
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        if(BeatifyPlayer.beatifyPlayer != null)
+            BeatifyPlayer.beatifyPlayer.pause();
     }
 }

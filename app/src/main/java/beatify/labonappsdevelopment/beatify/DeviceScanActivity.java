@@ -224,7 +224,7 @@ public class DeviceScanActivity extends AppCompatActivity
                     mBluetoothLeService.disconnect();
                     DeviceScanActivity.mConnected = false;
 
-                    TextView conn = (TextView)view.findViewById(R.id.connection);
+                    TextView conn = (TextView) view.findViewById(R.id.connection);
                     conn.setText(R.string.disconnected);
                     conn.setTextColor(getResources().getColor(R.color.colorDisonnected));
 
@@ -243,12 +243,14 @@ public class DeviceScanActivity extends AppCompatActivity
                     mBluetoothLeService.connect(device.getAddress());
                     DeviceScanActivity.mConnected = true;
 
-                    TextView conn = (TextView)view.findViewById(R.id.connection);
+                    TextView conn = (TextView) view.findViewById(R.id.connection);
                     conn.setText(R.string.connected);
                     conn.setTextColor(getResources().getColor(R.color.colorConnected));
 
-                    heartRatMenuItem.setTitle(getResources().getString(R.string.heart_rate) + ": " + mData);
-                    connectedDeviceMenuItem.setTitle(mDeviceName);
+                    if(mData != null)
+                        heartRatMenuItem.setTitle(getResources().getString(R.string.heart_rate) + ": " + mData);
+                    if(mDeviceName != null && mDeviceName.length() > 0)
+                        connectedDeviceMenuItem.setTitle(mDeviceName);
 
                     if (mScanning) {
                         mBluetoothAdapter.stopLeScan(mLeScanCallback);
@@ -263,10 +265,8 @@ public class DeviceScanActivity extends AppCompatActivity
             final boolean result = mBluetoothLeService.connect(mDeviceAddress);
             Log.d(TAG, "Connect request result=" + result);
         }
-
-
-        Utils.displayCurrentTrackInfo(this);
-
+        Utils.currentActivity = this;
+        Utils.displayCurrentTrackInfo();
     }
 
     @Override
@@ -421,7 +421,8 @@ public class DeviceScanActivity extends AppCompatActivity
                 finish();
             }
             // Automatically connects to the device upon successful start-up initialization.
-            mBluetoothLeService.connect(mDeviceAddress);
+            try { mBluetoothLeService.connect(mDeviceAddress); }
+            catch (Exception e) { /* In case of an invalid address. */ }
         }
 
         @Override
@@ -486,7 +487,8 @@ public class DeviceScanActivity extends AppCompatActivity
                     uuid = gattCharacteristic.getUuid().toString();
                     // Find Heart rate measurement (0x2A37)
                     if(SampleGattAttributes.lookup(uuid,"unknown").equals("Heart Rate Measurement")){
-                        mBluetoothLeService.setCharacteristicNotification(gattCharacteristic, true);
+                        try  { mBluetoothLeService.setCharacteristicNotification(gattCharacteristic, true); }
+                        catch (Exception e ) { /* Sometimes something unexpected happens. */ }
                     }
                 }
             }

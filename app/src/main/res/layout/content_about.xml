@@ -161,6 +161,25 @@
                     android:layout_centerHorizontal="true"
                     android:layout_below="@id/license_add_echonest"/>
 
+
+                <TextView
+                    android:id="@+id/info_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/echonest_logo"
+                    android:layout_centerHorizontal="true"
+                    android:text="@string/le_bluetooth_warning_label"
+                    android:textSize="24dp"
+                    android:layout_marginTop="50dp"/>
+
+                <TextView
+                    android:id="@+id/info_label_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/info_label"
+                    android:layout_centerHorizontal="true"
+                    android:text="@string/le_bluetooth_warning"/>
+
             </RelativeLayout>
         </RelativeLayout>
     </LinearLayout>

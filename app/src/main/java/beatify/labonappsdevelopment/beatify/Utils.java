@@ -3,14 +3,8 @@ package beatify.labonappsdevelopment.beatify;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,23 +19,19 @@ import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.Iconify;
 import com.joanzapata.iconify.fonts.FontAwesomeIcons;
 import com.joanzapata.iconify.fonts.FontAwesomeModule;
-import com.spotify.sdk.android.player.Player;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Queue;
-import java.util.Random;
 
 import kaaes.spotify.webapi.android.SpotifyApi;
 import kaaes.spotify.webapi.android.SpotifyService;
@@ -59,6 +49,7 @@ import retrofit.client.Response;
 public class Utils {
     protected static SpotifyApi api;
     protected static SpotifyService spotify;
+    protected static final Integer DEFAULT_BPM = 0;
 
     //store spotify data
     protected static UserPrivate userData;
@@ -70,7 +61,8 @@ public class Utils {
     protected static String accessToken;
 
     protected static final int ACTIVITY_CREATE = 0;
-    private static JSONObject song = null;
+
+    protected static Activity currentActivity;
 
 
     protected static void displaySpoitfyUserInfo (NavigationView nv) {
@@ -117,7 +109,7 @@ public class Utils {
             public void onClick(View view) {
                 if (BeatifyPlayer.beatifyPlayer != null) {
 
-                    if( ! BeatifyPlayer.beatifyPlayer.tracksLoaded()) {
+                    if (!BeatifyPlayer.beatifyPlayer.tracksLoaded()) {
                         Toast.makeText(ctx, "Data is loading", Toast.LENGTH_SHORT).show();
                     } else {
 
@@ -132,7 +124,6 @@ public class Utils {
                             play.setImageDrawable(new IconDrawable(a, FontAwesomeIcons.fa_play)
                                     .colorRes(R.color.colorWhite).actionBarSize());
                         }
-                        displayCurrentTrackInfo(a);
                     }
                 } else {
                     Toast.makeText(ctx, "Please select a playlist.", Toast.LENGTH_SHORT).show();
@@ -148,12 +139,17 @@ public class Utils {
             @Override
             public void onClick(View view) {
                 if (BeatifyPlayer.beatifyPlayer != null) {
-                    if( ! BeatifyPlayer.beatifyPlayer.tracksLoaded()) {
+                    if (!BeatifyPlayer.beatifyPlayer.tracksLoaded()) {
                         Toast.makeText(ctx, "Data is loading", Toast.LENGTH_SHORT).show();
                     } else {
+                        if(BeatifyPlayer.beatifyPlayer.isPaused){
+                            FloatingActionButton ply = (FloatingActionButton)a.findViewById(R.id.play);
+                            ply.setImageDrawable(new IconDrawable(a, FontAwesomeIcons.fa_pause)
+                                    .colorRes(R.color.colorWhite).actionBarSize());
+                        }
                         BeatifyPlayer.beatifyPlayer.next();
                         Toast.makeText(ctx, ctx.getString(R.string.next), Toast.LENGTH_SHORT).show();
-                        displayCurrentTrackInfo(a);
+
                     }
                 } else
                     Toast.makeText(ctx, ctx.getString(R.string.select_playlist), Toast.LENGTH_SHORT).show();
@@ -187,23 +183,28 @@ public class Utils {
     }
 
 
-    protected static void displayCurrentTrackInfo(Activity a) {
+    protected static void displayCurrentTrackInfo() {
         if(BeatifyPlayer.beatifyPlayer != null
-            && BeatifyPlayer.beatifyPlayer.existsCurrentTrack()) {
-            RelativeLayout rl = (RelativeLayout) a.findViewById(R.id.track_info);
-            WebView track_img = (WebView) a.findViewById(R.id.track_img);
-            TextView track_name = (TextView) a.findViewById(R.id.track_name);
-            TextView track_artists = (TextView) a.findViewById(R.id.track_artists);
-            TextView track_bpm = (TextView) a.findViewById(R.id.track_bpm);
+            && BeatifyPlayer.beatifyPlayer.existsCurrentTrack())
+        {
+            RelativeLayout rl = (RelativeLayout) currentActivity.findViewById(R.id.track_info);
+            WebView track_img = (WebView) currentActivity.findViewById(R.id.track_img);
+            TextView track_name = (TextView) currentActivity.findViewById(R.id.track_name);
+            TextView track_artists = (TextView) currentActivity.findViewById(R.id.track_artists);
+            TextView track_bpm = (TextView) currentActivity.findViewById(R.id.track_bpm);
 
             rl.setVisibility(LinearLayout.VISIBLE);
             track_name.setText(BeatifyPlayer.beatifyPlayer.getCurrentTrackName());
             track_artists.setText(BeatifyPlayer.beatifyPlayer.getCurrentTrackArtists());
-            track_bpm.setText(BeatifyPlayer.beatifyPlayer.getCurrentTrackBpm());
             track_img.loadUrl(BeatifyPlayer.beatifyPlayer.getCurrentTrackImg());
+
+            if(BeatifyPlayer.beatifyPlayer.getCurrentTrackBpm() != DEFAULT_BPM)
+                track_bpm.setText(BeatifyPlayer.beatifyPlayer.getCurrentTrackBpm().toString());
+            else
+                track_bpm.setText(Utils.currentActivity.getResources().getText(R.string.no_data));
+
         }
     }
-
 
     protected static PlaylistSimple getPlaylistById(String id) {
         for(PlaylistSimple pl : Utils.userPlaylists)
@@ -211,8 +212,6 @@ public class Utils {
                 return pl;
         return null;
     }
-
-
 
     protected static void getSpotifyData(final Activity a, final Intent intent) {
         //get user_id
@@ -234,12 +233,14 @@ public class Utils {
                                     List<PlaylistTrack> tracks = playlistTrackPager.items;
                                     for (PlaylistTrack plTrack : tracks) {
                                         try {
-                                            fetchBPM(plTrack, response.getUrl().split("/")[7], plTrack.track.artists.get(0).name, plTrack.track.name);
+                                            fetchBPM(plTrack,
+                                                    response.getUrl().split("/")[7],
+                                                    plTrack.track.artists.get(0).name,
+                                                    plTrack.track.name);
                                         } catch (IOException e) {
                                             e.printStackTrace();
                                         }
                                     }
-
                                 }
 
                                 @Override
@@ -249,6 +250,7 @@ public class Utils {
                             });
                         }
                         a.startActivityForResult(intent, ACTIVITY_CREATE);
+                        a.finish();
                     }
 
                     @Override
@@ -265,118 +267,89 @@ public class Utils {
         });
     }
 
+    private static void fetchBPM(final PlaylistTrack plTrack, final String playlist, String artistName, final String songName)
+            throws IOException {
 
+        final String encodedArtistName = URLEncoder.encode(artistName, "UTF-8");
+        final String encodedSongName = URLEncoder.encode(songName, "UTF-8");
 
-    private static void fetchBPM(final PlaylistTrack plTrack, final String playList, String artistName, final String songName) throws IOException {
-        final String[] artistNameArr = artistName.split(" ");
-        final String[] songNameArr = songName.split(" ");
-        Thread thread = new Thread(new Runnable(){
+        Thread threadFetch = new Thread(new Runnable(){
             @Override
             public void run() {
                 try {
-                    URL url = null;
                     HttpURLConnection conn = null;
+                    StringBuilder url = new StringBuilder();
+                    url.append("http://developer.echonest.com/api/v4/song/search?api_key=KSTXY4LPAIV0FHCNU");
+                    url.append("&artist=" + encodedArtistName);
+                    url.append("&title=" + encodedSongName);
 
-                    String urlString = "http://developer.echonest.com/api/v4/song/search?api_key=KSTXY4LPAIV0FHCNU&artist=";
-                    for (int i = 0; i < artistNameArr.length; i++) {
-                        urlString += artistNameArr[i].toLowerCase() + "%20";
-                    }
-                    urlString = urlString.substring(0, urlString.length() - 3);
-                    urlString += "&title=";
-                    for (int i = 0; i < songNameArr.length; i++) {
-                        urlString += songNameArr[i].toLowerCase() + "%20";
-                    }
-                    urlString = urlString.substring(0, urlString.length() - 3);
-
-                    url = new URL(urlString);
-                    conn = (HttpURLConnection) url.openConnection();
+                    conn = (HttpURLConnection) new URL(url.toString()).openConnection();
                     conn.setRequestMethod("GET");
                     conn.setDoInput(true);
-                    int responseCode = conn.getResponseCode();
-                    //        conn.disconnect();
-                    System.out.println("\nSending 'GET' request to URL : " + url);
-                    System.out.println("Response Code : " + responseCode);
 
-                    if (responseCode == 200) {
-                        String response = fetchResponse(conn);
+                    JSONObject song = new JSONObject(fetchResponse(conn));
+                    JSONArray arrDetails = song.getJSONObject("response").getJSONArray("songs");
 
-                        song = new JSONObject(response);
-                        JSONArray arr = song.getJSONObject("response").getJSONArray("songs");
-                        if (arr.length() == 0) {
-                            if (Utils.userPlaylistsTracks.containsKey(playList)) {
-                                if (Utils.userPlaylistsTracks.get(playList).containsKey(0)) {
-                                    Utils.userPlaylistsTracks.get(playList).get(0).add(plTrack);
-                                } else {
-                                    ArrayList<PlaylistTrack> pl = new ArrayList<>();
-                                    pl.add(plTrack);
-                                    Utils.userPlaylistsTracks.get(playList).put(0, pl);
-                                }
-                            } else {
-                                HashMap<Integer, List<PlaylistTrack>> map = new HashMap<>();
-                                ArrayList<PlaylistTrack> pl = new ArrayList<>();
-                                pl.add(plTrack);
-                                map.put(0, pl);
-                                Utils.userPlaylistsTracks.put(playList, map);
-                            }
-                        } else {
-                            String id = ((JSONObject) arr.get(0)).getString("id");
-                            fetchBPMWithId(plTrack, playList, id, songName);
-                        }
-                    } else {
-                        //            Toast.makeText(mContext, "connection error", Toast.LENGTH_SHORT).show();
-                    }
+                    Integer bpm  = DEFAULT_BPM;
+                    if(conn.getResponseCode() == 200 && arrDetails.length() > 0)
+                        bpm = fetchBPMWithId(((JSONObject) arrDetails.get(0)).getString("id"));
+
+                    addSpotifyBpmDataToTrackList(playlist, plTrack, bpm);
+
                 } catch (Exception e) {
+                    addSpotifyBpmDataToTrackList(playlist, plTrack, DEFAULT_BPM);
                     e.printStackTrace();
-                }            }
+                }
+            }
         });
-        thread.start();
+
+        // start fetching data
+        threadFetch.start();
 
     }
 
-    private static void fetchBPMWithId(PlaylistTrack plTrack, String playList, String id, final String songName){
+
+    private static void addSpotifyBpmDataToTrackList(String playlist, PlaylistTrack track,  Integer bpm) {
+        HashMap<Integer, List<PlaylistTrack>> playListEntry =
+                Utils.userPlaylistsTracks.containsKey(playlist)
+                        ? Utils.userPlaylistsTracks.get(playlist)
+                        : new HashMap<Integer, List<PlaylistTrack>>();
+
+        List<PlaylistTrack> trackList =
+                playListEntry.containsKey(bpm)
+                        ? playListEntry.get(bpm)
+                        : new ArrayList<PlaylistTrack>();
+
+        trackList.add(track);
+        playListEntry.put(bpm, trackList);
+        Utils.userPlaylistsTracks.put(playlist, playListEntry);
+    }
+
+    private static Integer fetchBPMWithId(String id) {
+        Integer bpm = DEFAULT_BPM;
         try {
             String bpmCheckURL = "http://developer.echonest.com/api/v4/song/profile?api_key=" +
                     "KSTXY4LPAIV0FHCNU&id=" + id + "&bucket=audio_summary";
-            URL url = new URL(bpmCheckURL);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+            HttpURLConnection conn = (HttpURLConnection) (new URL(bpmCheckURL)).openConnection();
             conn.setRequestMethod("GET");
             conn.setDoInput(true);
-            int responseCode = conn.getResponseCode();
-            System.out.println("\nSending 'GET' request to URL : " + url);
-            System.out.println("Response Code : " + responseCode);
 
-            if (responseCode == 200) {
-                String response = fetchResponse(conn);
+            String response = fetchResponse(conn);
+            JSONObject songDetails = new JSONObject(response);
+            JSONArray arrDetails = songDetails.getJSONObject("response").getJSONArray("songs");
+            JSONObject audioSummary = ((JSONObject) arrDetails.get(0)).getJSONObject("audio_summary");
+            Integer value = audioSummary.getInt("tempo");
 
+            bpm = (conn.getResponseCode() == 200)
+                ? value
+                : DEFAULT_BPM;
 
-                JSONObject songDetails = new JSONObject(response);
-                JSONArray arrDetails = songDetails.getJSONObject("response").getJSONArray("songs");
-                double bpm = ((JSONObject) arrDetails.get(0)).getJSONObject("audio_summary").getDouble("tempo");
-                if (Utils.userPlaylistsTracks.containsKey(playList)){
-                    if (Utils.userPlaylistsTracks.get(playList).containsKey((int)bpm)){
-                        Utils.userPlaylistsTracks.get(playList).get((int)bpm).add(plTrack);
-                    }
-                    else{
-                        ArrayList<PlaylistTrack> pl = new ArrayList<>();
-                        pl.add(plTrack);
-                        Utils.userPlaylistsTracks.get(playList).put((int)bpm, pl);
-                    }
-                }
-                else{
-                    HashMap<Integer, List<PlaylistTrack>> map = new HashMap<>();
-                    ArrayList<PlaylistTrack> pl = new ArrayList<>();
-                    pl.add(plTrack);
-                    map.put((int) bpm, pl);
-                    Utils.userPlaylistsTracks.put(playList, map);
-                }
-            }
-            else{
-                //           Toast.makeText(mContext, "connection error", Toast.LENGTH_SHORT).show();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        } catch (Exception e) { e.printStackTrace(); }
+        finally { return bpm;}
     }
+
+
 
     private static String fetchResponse(HttpURLConnection conn) throws IOException {
         BufferedReader in = new BufferedReader(
@@ -391,6 +364,5 @@ public class Utils {
         in.close();
         return response.toString();
     }
-
 
 }

@@ -96,7 +96,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/devs"
                 android:layout_centerHorizontal="true"
-                android:text="@string/licence_label"
+                android:text="@string/license_label"
                 android:textSize="24dp"
                 android:layout_marginTop="50dp"/>
 
@@ -111,7 +111,7 @@
                     android:id="@+id/licence"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/licence"
+                    android:text="@string/license"
                     android:layout_centerHorizontal="true"/>
 
                 <TextView
@@ -120,24 +120,46 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@id/licence"
                     android:layout_centerHorizontal="true"
-                    android:text="@string/licence_add_label"
+                    android:text="@string/license_add_label"
                     android:textSize="24dp"
                     android:layout_marginTop="50dp"/>
 
 
                 <TextView
-                    android:id="@+id/licence_add_iconify"
+                    android:id="@+id/license_add_iconify"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/licence_add_iconify"
+                    android:text="@string/license_add_iconify"
                     android:layout_below="@id/licence_add_label"/>
 
                 <TextView
-                    android:id="@+id/licence_add_awesomefont"
+                    android:id="@+id/license_add_awesomefont"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/licence_add_awesomefont"
-                    android:layout_below="@id/licence_add_iconify"/>
+                    android:text="@string/license_add_awesomefont"
+                    android:layout_below="@id/license_add_iconify"/>
+
+                <TextView
+                    android:id="@+id/license_add_kaaes"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/license_add_kaaes"
+                    android:layout_below="@id/license_add_awesomefont"/>
+
+                <TextView
+                    android:id="@+id/license_add_echonest"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/license_add_echonest"
+                    android:layout_below="@id/license_add_kaaes"/>
+
+                <ImageView
+                    android:id="@+id/echonest_logo"
+                    android:layout_width="300dp"
+                    android:layout_height="70dp"
+                    android:src="@mipmap/echonest_hr"
+                    android:layout_centerHorizontal="true"
+                    android:layout_below="@id/license_add_echonest"/>
 
             </RelativeLayout>
         </RelativeLayout>

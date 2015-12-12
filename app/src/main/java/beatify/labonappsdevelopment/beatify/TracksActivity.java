@@ -247,7 +247,7 @@ public class TracksActivity extends AppCompatActivity
                 BeatifyPlayer.beatifyPlayer =
                         new BeatifyPlayer(
                                 mPlaylist,
-                                mTrackListAdapter.getTrack(position).track.name);
+                                mTrackListAdapter.getTrack(position).track.uri);
                 ((FloatingActionButton)TracksActivity.this.findViewById(R.id.play)).performClick();
             }
         });

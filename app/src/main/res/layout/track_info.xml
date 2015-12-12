@@ -90,4 +90,5 @@
             android:layout_margin="2dp"
             android:text="@string/no_data"/>
     </LinearLayout>
+
 </RelativeLayout>

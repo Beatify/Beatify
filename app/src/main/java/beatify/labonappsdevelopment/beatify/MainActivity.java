@@ -21,6 +21,7 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.spotify.sdk.android.player.Config;
@@ -37,7 +38,7 @@ import kaaes.spotify.webapi.android.models.PlaylistSimple;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
-        PlayerNotificationCallback, ConnectionStateCallback {
+        PlayerNotificationCallback, ConnectionStateCallback  {
 
     private MenuItem heartRatMenuItem;
 
@@ -120,8 +121,8 @@ public class MainActivity extends AppCompatActivity
         super.onResume();
         // Initializes list view adapter.
         registerReceiver(mGattUpdateReceiver, DeviceScanActivity.makeGattUpdateIntentFilter());
-        setupPlayer();
         displayPlaylists();
+        BeatifyPlayer.setupPlayer(this, MainActivity.this, MainActivity.this);
         Utils.currentActivity = this;
         Utils.displayCurrentTrackInfo();
     }
@@ -229,25 +230,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-
-    private void setupPlayer () {
-        Config playerConfig = new Config(this, Utils.accessToken, Utils.CLIENT_ID);
-        Spotify.getPlayer(playerConfig, this, new Player.InitializationObserver() {
-            @Override
-            public void onInitialized(Player p) {
-                BeatifyPlayer.player = p;
-                BeatifyPlayer.player.addConnectionStateCallback(MainActivity.this);
-                BeatifyPlayer.player.addPlayerNotificationCallback(MainActivity.this);
-            }
-
-            @Override
-            public void onError(Throwable throwable) {
-                Log.e("MainActivity", "Could not initialize player: " + throwable.getMessage());
-            }
-        });
-    }
-
-
     private void displayPlaylists () {
         mPlaylistListAdapter = new PlaylistListAdapter();
         mListView.setAdapter(mPlaylistListAdapter);
@@ -278,7 +260,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-
     @Override
     public void onLoggedIn() {
 
@@ -305,17 +286,20 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onPlaybackEvent(EventType eventType, PlayerState playerState) {
-        if (EventType.TRACK_CHANGED.equals(eventType)) {
+    public void onPlaybackEvent(PlayerNotificationCallback.EventType eventType, PlayerState playerState) {
+        BeatifyPlayer.beatifyPlayer.setPlayState(playerState);
+
+        if (PlayerNotificationCallback.EventType.TRACK_CHANGED.equals(eventType)) {
             BeatifyPlayer.beatifyPlayer.addNextTrack();
-        } else if(EventType.AUDIO_FLUSH.equals(eventType)) {
+        } else if(PlayerNotificationCallback.EventType.AUDIO_FLUSH.equals(eventType)) {
+            BeatifyPlayer.beatifyPlayer.setCurrentTrack(playerState.trackUri);
             Utils.displayCurrentTrackInfo();
         }
+
     }
 
-
     @Override
-    public void onPlaybackError(ErrorType errorType, String s) {
+    public void onPlaybackError(PlayerNotificationCallback.ErrorType errorType, String s) {
 
     }
 }

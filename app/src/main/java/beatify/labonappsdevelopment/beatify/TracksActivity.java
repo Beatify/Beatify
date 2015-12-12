@@ -238,7 +238,13 @@ public class TracksActivity extends AppCompatActivity
 
         mTrackListAdapter = new TrackListAdapter();
         String playlist_id = getIntent().getStringExtra("playlist_id");
-        mPlaylist = Utils.getPlaylistById(playlist_id);
+
+        for(PlaylistSimple pl : Utils.userPlaylists)
+            if(pl.id.equals(playlist_id)) {
+                mPlaylist = pl;
+                break;
+            }
+
         if(Utils.userPlaylistsTracks.containsKey(playlist_id))
             for(List<PlaylistTrack> bpmTracks : Utils.userPlaylistsTracks.get(playlist_id).values())
                 for(PlaylistTrack t : bpmTracks) {

@@ -295,11 +295,10 @@ public class MainActivity extends AppCompatActivity
     public void onPlaybackEvent(PlayerNotificationCallback.EventType eventType, PlayerState playerState) {
         BeatifyPlayer.beatifyPlayer.setPlayState(playerState);
         BeatifyPlayer.beatifyPlayer.setCurrentTrack(playerState.trackUri);
-        Log.d("--------", playerState.trackUri);
         Utils.displayCurrentTrackInfo();
 
         if (PlayerNotificationCallback.EventType.TRACK_CHANGED.equals(eventType)) {
-            BeatifyPlayer.beatifyPlayer.addNextTracks();
+            BeatifyPlayer.beatifyPlayer.addTracksToQueue();
         }
 
     }

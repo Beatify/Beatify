@@ -1,8 +1,6 @@
 package beatify.labonappsdevelopment.beatify;
 
 import android.app.Activity;
-import android.content.Context;
-import android.support.design.widget.NavigationView;
 import android.util.Log;
 import android.util.Pair;
 
@@ -11,34 +9,31 @@ import com.spotify.sdk.android.player.ConnectionStateCallback;
 import com.spotify.sdk.android.player.Player;
 import com.spotify.sdk.android.player.PlayerNotificationCallback;
 import com.spotify.sdk.android.player.PlayerState;
-import com.spotify.sdk.android.player.PlayerStateCallback;
 import com.spotify.sdk.android.player.Spotify;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 import java.util.Random;
 import java.util.Set;
 
+import kaaes.spotify.webapi.android.models.AlbumSimple;
 import kaaes.spotify.webapi.android.models.ArtistSimple;
 import kaaes.spotify.webapi.android.models.PlaylistSimple;
 import kaaes.spotify.webapi.android.models.PlaylistTrack;
+import kaaes.spotify.webapi.android.models.Track;
 
-/**
- * Created by mpreis on 05/12/15.
- */
 public class BeatifyPlayer {
+    // Holds the only BeatifyPlayer instance of the whole application.
     protected static BeatifyPlayer beatifyPlayer;
 
-    private Track currentTrack;
-    private PlaylistSimple playlist;
+    private Pair<Integer, PlaylistTrack> currentTrack;          // Currently selected track (first=bpm, second=track)
+    private PlaylistSimple playlist;                            // Currently selected playlist
+    private HashMap<Integer, List<PlaylistTrack>> tracksByBpm;  // All tracks of playlist categorized by BPM
+    private Boolean isPaused;                                   // Spotify/Beatify player status
+    protected static Player player;                             // Spotify player
+
     private Random rand;
-    private HashMap<Integer, List<PlaylistTrack>> tracksByBpm;
-    private HashMap<String, Track> tracksByUri;
-    private Boolean isPaused;
-    protected static Player player;
 
     private final Integer MIN_SONGS = 3;
     private final Integer INTERVAL_BOUND = 100;
@@ -46,7 +41,6 @@ public class BeatifyPlayer {
 
 
     public BeatifyPlayer(PlaylistSimple pl) { this(pl, null); }
-
     public BeatifyPlayer(PlaylistSimple pl, final String trackUri) {
         playlist = pl;
         isPaused = true;
@@ -58,23 +52,20 @@ public class BeatifyPlayer {
                         ? Utils.userPlaylistsTracks.get(playlist.id)
                         : new HashMap<Integer, List<PlaylistTrack>>();
 
-        tracksByUri = new HashMap<String, Track>();
-        for(Integer bpmKey : tracksByBpm.keySet())
-            for (PlaylistTrack track : tracksByBpm.get(bpmKey)) {
-                Track tmp = new Track(bpmKey, track);
-                tracksByUri.put(tmp.uri, tmp);
-            }
-
         player.clearQueue();
         if(trackUri != null)
             player.queue(trackUri);
         else
-            addNextTracks();
+            addTracksToQueue();
 
         player.skipToNext();
         player.pause();
     }
 
+    /**
+     * Select tracks to play depending on the current heart rate of the user.
+     * @return
+     */
     private List<String> getMoreTracks() {
         if (tracksByBpm.isEmpty()) return new ArrayList<String>();
 
@@ -136,34 +127,126 @@ public class BeatifyPlayer {
         return nextTracks;
     }
 
+    /**
+     * Start playing or resume current track.
+     */
     public void play() { player.resume();}
-    public void next() { player.skipToNext();}
-    public void pause(){
-        player.pause(); }
+    
+    /**
+     * Pause player
+     */
+    public void pause(){ player.pause(); }
 
-    public String getCurrentTrackName() { return currentTrack.name; }
-    public String getCurrentTrackArtists () { return currentTrack.artist; }
-    public Integer getCurrentTrackBpm() { return currentTrack.bpm; }
-    public String getCurrentTrackImg() { return currentTrack.imgUrl; }
-    public String getCurrentPlaylistName() { return playlist.name; }
+    /**
+     * Play next track in queue.
+     */
+    public void next() {
+        addTracksToQueue();
+        player.skipToNext();
+    }
 
-    public boolean existsCurrentTrack() { return currentTrack != null; }
 
-    public boolean tracksLoaded() { return tracksByBpm != null; }
 
+    /**
+     * @return Name of current track.
+     */
+    public String getCurrentTrackName() {
+        return currentTrack.second.track.name;
+    }
+
+    /**
+     * @return Artists of current track.
+     */
+    public String getCurrentTrackArtists () {
+        StringBuilder artists = new StringBuilder();
+        for(ArtistSimple artist : currentTrack.second.track.artists) {
+            if (artists.length() > 0) artists.append(", ");
+            artists.append(artist.name);
+        }
+        return artists.toString();
+    }
+
+    /**
+     * @return Bpm (beats per minute) of current track.
+     */
+    public Integer getCurrentTrackBpm() {
+        return currentTrack.first;
+    }
+
+    /**
+     * @return Image URL of current track.
+     */
+    public String getCurrentTrackImg() {
+        return (currentTrack.second.track.album.images.size() > 2)
+                ? currentTrack.second.track.album.images.get(2).url
+                : null;
+    }
+
+    /**
+     * @return Name of currently selected play list.
+     */
+    public String getCurrentPlaylistName() {
+        return playlist.name;
+    }
+
+    /**
+     * @return <code>true</code> if there is a current track (playlist selected or explicit track selected),
+     *          else return <code>false</code>.
+     */
+    public boolean existsCurrentTrack() {
+        return currentTrack != null;
+    }
+
+    /**
+     * @return <code>true</code> if all tracks has been loaded, else <code>false</code>.
+     */
+    public boolean tracksLoaded() {
+        return tracksByBpm != null;
+    }
+
+    /**
+     * The BeatifyPlayer adopts the state of the given PlayerState object.
+     * @param state
+     */
     public void setPlayState(PlayerState state) { isPaused = !state.playing; }
-    public boolean isPaused() { return isPaused; }
 
-    public void addNextTracks() {
+    /**
+     * @return <code>true</code> if player is paused, else <code>false</code>.
+     */
+    public boolean isPaused() {
+        return isPaused;
+    }
+
+    /**
+     * Adds tracks to player queue.
+     */
+    public void addTracksToQueue() {
         for(String uri : getMoreTracks())
             player.queue(uri);
     }
 
+    /**
+     * Set current track by given Spotify URI. If URI is not found dummy values are set.
+     * @param uri
+     */
     public void setCurrentTrack(String uri) {
-        currentTrack = tracksByUri.get(uri);
+        currentTrack = null;
+        for(Integer bpm : tracksByBpm.keySet())
+            for(PlaylistTrack plt: tracksByBpm.get(bpm))
+                if(uri.equals(plt.track.uri)) {
+                    currentTrack = new Pair<Integer, PlaylistTrack>(bpm, plt);
+                    break;
+                }
+        if(currentTrack == null)
+            currentTrack = getDummyTrack();
     }
 
-
+    /**
+     * Initialize Spotify player.
+     * @param a
+     * @param csc
+     * @param pnc
+     */
     protected static void setupPlayer(Activity a,
                                       final ConnectionStateCallback csc,
                                       final PlayerNotificationCallback pnc) {
@@ -185,55 +268,23 @@ public class BeatifyPlayer {
         }
     }
 
+    /**
+     * @return A dummy track.
+     */
+    private Pair<Integer, PlaylistTrack> getDummyTrack() {
 
+        AlbumSimple dummyAlbum = new AlbumSimple();
+        dummyAlbum.name = "Unknown album";
+        dummyAlbum.images = new ArrayList<>();
 
+        PlaylistTrack dummyTrack = new PlaylistTrack();
+        dummyTrack.track = new Track();
+        dummyTrack.track.name = "Unknown track";
+        dummyTrack.track.uri = "Unknown uri";
+        dummyTrack.track.album = dummyAlbum;
+        dummyTrack.track.artists = new ArrayList<>();
 
-
-
-
-    /// ///
-    /// Helper class: Represents a track as one object.
-    //////
-    private class Track {
-        private String name;
-        private String artist;
-        private String imgUrl;
-        private String uri;
-        private Integer bpm;
-
-        Track () {
-            name = "Unknown track";
-            artist = "Unknown artist";
-            imgUrl = null;
-            uri = null;
-            bpm = Utils.DEFAULT_BPM;
-        }
-
-        Track(Integer bpm, PlaylistTrack plTrack) {
-            this.bpm = bpm;
-            name = plTrack.track.name;
-            uri = plTrack.track.uri;
-
-            imgUrl = (plTrack.track.album.images.size() > 2)
-                    ? plTrack.track.album.images.get(2).url
-                    : null;
-
-
-            StringBuilder artists = new StringBuilder();
-            for(ArtistSimple artist : plTrack.track.artists) {
-                if (artists.length() > 0) artists.append(", ");
-                artists.append(artist.name);
-            }
-            artist = artists.toString();
-
-        }
-
-        Track(String name, String artist, String imgUrl, String uri, Integer bpm) {
-            this.name = name;
-            this.artist = artist;
-            this.imgUrl = imgUrl;
-            this.uri = uri;
-            this.bpm = bpm;
-        }
+        return new Pair<Integer, PlaylistTrack>(
+                Utils.DEFAULT_BPM, dummyTrack);
     }
 }

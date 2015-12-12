@@ -43,28 +43,31 @@ import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-/**
- * Created by mpreis on 04/12/15.
- */
 public class Utils {
     protected static SpotifyApi api;
     protected static SpotifyService spotify;
+
     protected static final Integer DEFAULT_BPM = 0;
 
-    //store spotify data
+    //store Spotify data
     protected static UserPrivate userData;
     protected static List<PlaylistSimple> userPlaylists;
     protected static HashMap<String, HashMap<Integer, List<PlaylistTrack>>> userPlaylistsTracks;
 
+    // Constants of the Spotify connection.
     protected static final String CLIENT_ID = "e0350925a3624229875cb15856fb7567";
     protected static final int REQUEST_CODE = 1337;
     protected static String accessToken;
 
     protected static final int ACTIVITY_CREATE = 0;
 
+    // Holds the currently displayed activity, needed to display track information.
     protected static Activity currentActivity;
 
-
+    /**
+     * Display user information in given NavigationView.
+     * @param nv
+     */
     protected static void displaySpoitfyUserInfo (NavigationView nv) {
         TextView spotify_user_name = (TextView) nv.getHeaderView(0).findViewById(R.id.spotify_user_name);
         WebView spotify_user_img = (WebView) nv.getHeaderView(0).findViewById(R.id.spotify_user_img);
@@ -76,10 +79,11 @@ public class Utils {
             else
                 spotify_user_name.setText(userData.id);
 
-
-            if (userData.images.size() > 0)
+            if (userData.images.size() > 0){
+                spotify_user_img.setVisibility(View.VISIBLE);
+                spotify_user_img_dummy.setVisibility(View.GONE);
                 spotify_user_img.loadUrl(userData.images.get(0).url);
-            else {
+            } else {
                 spotify_user_img.setVisibility(View.GONE);
                 spotify_user_img_dummy.setVisibility(View.VISIBLE);
             }
@@ -88,6 +92,11 @@ public class Utils {
     }
 
 
+    /**
+     * Setup FloatingActionButton (play and next buttons) for given activity and corresponding context.
+     * @param ctx
+     * @param a
+     */
     protected static void setupFloatingActionButtons(final Context ctx, final Activity a) {
         Iconify.with(new FontAwesomeModule());
 
@@ -158,6 +167,11 @@ public class Utils {
     }
 
 
+    /**
+     * Replace default icons of the navigation by fancy AwesomeFont icons.
+     * @param mthis
+     * @param nv
+     */
     protected static void setNavigationViewIcons(Activity mthis, NavigationView nv) {
         Iconify.with(new FontAwesomeModule());
 
@@ -183,6 +197,9 @@ public class Utils {
     }
 
 
+    /**
+     * Display information about the currenlty playing track, if there is such one.
+     */
     protected static void displayCurrentTrackInfo() {
         if(BeatifyPlayer.beatifyPlayer != null
             && BeatifyPlayer.beatifyPlayer.existsCurrentTrack())
@@ -208,13 +225,12 @@ public class Utils {
         }
     }
 
-    protected static PlaylistSimple getPlaylistById(String id) {
-        for(PlaylistSimple pl : Utils.userPlaylists)
-            if(pl.id.equals(id))
-                return pl;
-        return null;
-    }
-
+    /**
+     * Request all information needed from Spotify (user data, playlists, tracks) and
+     * fetch BMP of tracks.
+     * @param a
+     * @param intent
+     */
     protected static void getSpotifyData(final Activity a, final Intent intent) {
         //get user_id
         Utils.spotify.getMe(new Callback<UserPrivate>() {
@@ -269,6 +285,14 @@ public class Utils {
         });
     }
 
+    /**
+     * Fetch BPM of given track (by track name and artist).
+     * @param plTrack
+     * @param playlist
+     * @param artistName
+     * @param songName
+     * @throws IOException
+     */
     private static void fetchBPM(final PlaylistTrack plTrack, final String playlist, String artistName, final String songName)
             throws IOException {
 
@@ -310,23 +334,11 @@ public class Utils {
 
     }
 
-
-    private static void addSpotifyBpmDataToTrackList(String playlist, PlaylistTrack track,  Integer bpm) {
-        HashMap<Integer, List<PlaylistTrack>> playListEntry =
-                Utils.userPlaylistsTracks.containsKey(playlist)
-                        ? Utils.userPlaylistsTracks.get(playlist)
-                        : new HashMap<Integer, List<PlaylistTrack>>();
-
-        List<PlaylistTrack> trackList =
-                playListEntry.containsKey(bpm)
-                        ? playListEntry.get(bpm)
-                        : new ArrayList<PlaylistTrack>();
-
-        trackList.add(track);
-        playListEntry.put(bpm, trackList);
-        Utils.userPlaylistsTracks.put(playlist, playListEntry);
-    }
-
+    /**
+     * Fetch BPM of track by Echonest id.
+     * @param id
+     * @return
+     */
     private static Integer fetchBPMWithId(String id) {
         Integer bpm = DEFAULT_BPM;
         try {
@@ -351,8 +363,12 @@ public class Utils {
         finally { return bpm;}
     }
 
-
-
+    /**
+     * Get response of connection.
+     * @param conn
+     * @return
+     * @throws IOException
+     */
     private static String fetchResponse(HttpURLConnection conn) throws IOException {
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(conn.getInputStream()));
@@ -367,4 +383,25 @@ public class Utils {
         return response.toString();
     }
 
+    /**
+     * Build main Beatify data structure.
+     * @param playlist
+     * @param track
+     * @param bpm
+     */
+    private static void addSpotifyBpmDataToTrackList(String playlist, PlaylistTrack track,  Integer bpm) {
+        HashMap<Integer, List<PlaylistTrack>> playListEntry =
+                Utils.userPlaylistsTracks.containsKey(playlist)
+                        ? Utils.userPlaylistsTracks.get(playlist)
+                        : new HashMap<Integer, List<PlaylistTrack>>();
+
+        List<PlaylistTrack> trackList =
+                playListEntry.containsKey(bpm)
+                        ? playListEntry.get(bpm)
+                        : new ArrayList<PlaylistTrack>();
+
+        trackList.add(track);
+        playListEntry.put(bpm, trackList);
+        Utils.userPlaylistsTracks.put(playlist, playListEntry);
+    }
 }

@@ -93,7 +93,7 @@ public class Utils {
 
         final FloatingActionButton play = (FloatingActionButton) a.findViewById(R.id.play);
         if(BeatifyPlayer.beatifyPlayer != null) {
-            if(BeatifyPlayer.beatifyPlayer.isPaused) {
+            if(BeatifyPlayer.beatifyPlayer.isPaused()) {
                 play.setImageDrawable(new IconDrawable(a, FontAwesomeIcons.fa_play)
                         .colorRes(R.color.colorWhite).actionBarSize());
             } else {
@@ -113,7 +113,7 @@ public class Utils {
                         Toast.makeText(ctx, "Data is loading", Toast.LENGTH_SHORT).show();
                     } else {
 
-                        if (BeatifyPlayer.beatifyPlayer.isPaused) {
+                        if (BeatifyPlayer.beatifyPlayer.isPaused()) {
                             BeatifyPlayer.beatifyPlayer.play();
                             Toast.makeText(ctx, ctx.getString(R.string.play), Toast.LENGTH_SHORT).show();
                             play.setImageDrawable(new IconDrawable(a, FontAwesomeIcons.fa_pause)
@@ -142,7 +142,7 @@ public class Utils {
                     if (!BeatifyPlayer.beatifyPlayer.tracksLoaded()) {
                         Toast.makeText(ctx, "Data is loading", Toast.LENGTH_SHORT).show();
                     } else {
-                        if(BeatifyPlayer.beatifyPlayer.isPaused){
+                        if(BeatifyPlayer.beatifyPlayer.isPaused()){
                             FloatingActionButton ply = (FloatingActionButton)a.findViewById(R.id.play);
                             ply.setImageDrawable(new IconDrawable(a, FontAwesomeIcons.fa_pause)
                                     .colorRes(R.color.colorWhite).actionBarSize());
@@ -192,11 +192,13 @@ public class Utils {
             TextView track_name = (TextView) currentActivity.findViewById(R.id.track_name);
             TextView track_artists = (TextView) currentActivity.findViewById(R.id.track_artists);
             TextView track_bpm = (TextView) currentActivity.findViewById(R.id.track_bpm);
+            TextView playlist_name = (TextView) currentActivity.findViewById(R.id.track_playlist_name);
 
             rl.setVisibility(LinearLayout.VISIBLE);
             track_name.setText(BeatifyPlayer.beatifyPlayer.getCurrentTrackName());
             track_artists.setText(BeatifyPlayer.beatifyPlayer.getCurrentTrackArtists());
             track_img.loadUrl(BeatifyPlayer.beatifyPlayer.getCurrentTrackImg());
+            playlist_name.setText(BeatifyPlayer.beatifyPlayer.getCurrentPlaylistName());
 
             if(BeatifyPlayer.beatifyPlayer.getCurrentTrackBpm() != DEFAULT_BPM)
                 track_bpm.setText(BeatifyPlayer.beatifyPlayer.getCurrentTrackBpm().toString());

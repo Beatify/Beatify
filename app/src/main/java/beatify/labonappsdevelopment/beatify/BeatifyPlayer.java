@@ -32,14 +32,13 @@ import kaaes.spotify.webapi.android.models.PlaylistTrack;
 public class BeatifyPlayer {
     protected static BeatifyPlayer beatifyPlayer;
 
-    // TODO: Set current Track!!!
     private Track currentTrack;
     private PlaylistSimple playlist;
     private Random rand;
     private HashMap<Integer, List<PlaylistTrack>> tracksByBpm;
     private HashMap<String, Track> tracksByUri;
+    private Boolean isPaused;
     protected static Player player;
-    protected Boolean isPaused;
 
     private final Integer MIN_SONGS = 3;
     private final Integer INTERVAL_BOUND = 100;
@@ -70,8 +69,7 @@ public class BeatifyPlayer {
         if(trackUri != null)
             player.queue(trackUri);
         else
-            for(String tUri : getMoreTracks())
-                player.queue(tUri);
+            addNextTracks();
 
         player.skipToNext();
         player.pause();
@@ -140,17 +138,23 @@ public class BeatifyPlayer {
 
     public void play() { player.resume();}
     public void next() { player.skipToNext();}
-    public void pause(){ player.pause(); }
+    public void pause(){
+        player.pause(); }
 
     public String getCurrentTrackName() { return currentTrack.name; }
     public String getCurrentTrackArtists () { return currentTrack.artist; }
     public Integer getCurrentTrackBpm() { return currentTrack.bpm; }
     public String getCurrentTrackImg() { return currentTrack.imgUrl; }
-    public boolean existsCurrentTrack() { return currentTrack != null; }
-    public boolean tracksLoaded() { return tracksByBpm != null; }
-    public void setPlayState(PlayerState state) { isPaused = !state.playing; }
+    public String getCurrentPlaylistName() { return playlist.name; }
 
-    public void addNextTrack() {
+    public boolean existsCurrentTrack() { return currentTrack != null; }
+
+    public boolean tracksLoaded() { return tracksByBpm != null; }
+
+    public void setPlayState(PlayerState state) { isPaused = !state.playing; }
+    public boolean isPaused() { return isPaused; }
+
+    public void addNextTracks() {
         for(String uri : getMoreTracks())
             player.queue(uri);
     }
@@ -163,21 +167,27 @@ public class BeatifyPlayer {
     protected static void setupPlayer(Activity a,
                                       final ConnectionStateCallback csc,
                                       final PlayerNotificationCallback pnc) {
-        Config playerConfig = new Config(a, Utils.accessToken, Utils.CLIENT_ID);
-        Spotify.getPlayer(playerConfig, a, new Player.InitializationObserver() {
-            @Override
-            public void onInitialized(Player p) {
-                BeatifyPlayer.player = p;
-                BeatifyPlayer.player.addConnectionStateCallback(csc);
-                BeatifyPlayer.player.addPlayerNotificationCallback(pnc);
-            }
+        if(player == null) {
+            Config playerConfig = new Config(a, Utils.accessToken, Utils.CLIENT_ID);
+            Spotify.getPlayer(playerConfig, a, new Player.InitializationObserver() {
+                @Override
+                public void onInitialized(Player p) {
+                    player = p;
+                    player.addConnectionStateCallback(csc);
+                    player.addPlayerNotificationCallback(pnc);
+                }
 
-            @Override
-            public void onError(Throwable throwable) {
-                Log.e("MainActivity", "Could not initialize player: " + throwable.getMessage());
-            }
-        });
+                @Override
+                public void onError(Throwable throwable) {
+                    Log.e("MainActivity", "Could not initialize player: " + throwable.getMessage());
+                }
+            });
+        }
     }
+
+
+
+
 
 
 

@@ -127,6 +127,12 @@ public class MainActivity extends AppCompatActivity
         Utils.displayCurrentTrackInfo();
     }
 
+    @Override
+    protected  void onPause() {
+        super.onPause();
+        unregisterReceiver(mGattUpdateReceiver);
+    }
+
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -288,12 +294,12 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onPlaybackEvent(PlayerNotificationCallback.EventType eventType, PlayerState playerState) {
         BeatifyPlayer.beatifyPlayer.setPlayState(playerState);
+        BeatifyPlayer.beatifyPlayer.setCurrentTrack(playerState.trackUri);
+        Log.d("--------", playerState.trackUri);
+        Utils.displayCurrentTrackInfo();
 
         if (PlayerNotificationCallback.EventType.TRACK_CHANGED.equals(eventType)) {
-            BeatifyPlayer.beatifyPlayer.addNextTrack();
-        } else if(PlayerNotificationCallback.EventType.AUDIO_FLUSH.equals(eventType)) {
-            BeatifyPlayer.beatifyPlayer.setCurrentTrack(playerState.trackUri);
-            Utils.displayCurrentTrackInfo();
+            BeatifyPlayer.beatifyPlayer.addNextTracks();
         }
 
     }

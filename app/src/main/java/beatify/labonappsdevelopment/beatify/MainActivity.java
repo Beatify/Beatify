@@ -130,7 +130,10 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected  void onPause() {
         super.onPause();
-        unregisterReceiver(mGattUpdateReceiver);
+        try {
+            unregisterReceiver(mGattUpdateReceiver);
+        }
+        catch(Exception e){};
     }
 
     @SuppressWarnings("StatementWithEmptyBody")

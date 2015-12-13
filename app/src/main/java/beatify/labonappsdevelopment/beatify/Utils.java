@@ -79,14 +79,16 @@ public class Utils {
             else
                 spotify_user_name.setText(userData.id);
 
+            /*
             if (userData.images.size() > 0){
                 spotify_user_img.setVisibility(View.VISIBLE);
                 spotify_user_img_dummy.setVisibility(View.GONE);
-                spotify_user_img.loadUrl(userData.images.get(0).url);
+                spotify_user_img.loadUrl(userData.images.get(1).url);
             } else {
                 spotify_user_img.setVisibility(View.GONE);
                 spotify_user_img_dummy.setVisibility(View.VISIBLE);
             }
+            */
         }
 
     }
@@ -324,7 +326,6 @@ public class Utils {
 
                 } catch (Exception e) {
                     addSpotifyBpmDataToTrackList(playlist, plTrack, DEFAULT_BPM);
-                    e.printStackTrace();
                 }
             }
         });
@@ -359,7 +360,7 @@ public class Utils {
                 ? value
                 : DEFAULT_BPM;
 
-        } catch (Exception e) { e.printStackTrace(); }
+        } catch (Exception e) {}
         finally { return bpm;}
     }
 

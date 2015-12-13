@@ -35,7 +35,7 @@ public class BeatifyPlayer {
 
     private Random rand;
 
-    private final Integer MIN_SONGS = 3;
+    private final Integer MIN_SONGS = 1;
     private final Integer INTERVAL_BOUND = 100;
     private final Integer INTERVAL_STEPS = 10;
 
@@ -86,9 +86,9 @@ public class BeatifyPlayer {
             }
         }
 
-        for (int interval = 0, lastInterval = 0;
+        for (int interval = INTERVAL_STEPS, lastInterval = 1;
              tracksInInterval.size() < MIN_SONGS && interval < INTERVAL_BOUND;
-             interval+=INTERVAL_STEPS)
+             interval+=INTERVAL_STEPS, lastInterval += INTERVAL_STEPS)
         {
             for (int i = lastInterval; i < interval; i++)
                 if (tracksByBpm.containsKey(heartRate - i)) {
@@ -104,15 +104,14 @@ public class BeatifyPlayer {
                                 tracksByBpm.get(heartRate + i).get(j)));
                     }
                 }
-
-            lastInterval = interval;
         }
 
         List<String>nextTracks = new ArrayList<String>();
         // add at least MIN_SONGS tracks to the play queue
-        for(int i = 0; i < MIN_SONGS && i < tracksInInterval.size()
-                && ! tracksInInterval.isEmpty(); i++)
-            nextTracks.add(tracksInInterval.remove(i).second.track.uri);
+        while(nextTracks.size() < MIN_SONGS) {
+            nextTracks.add(tracksInInterval.remove(
+                            rand.nextInt(tracksInInterval.size())).second.track.uri);
+        }
 
         // if there are still no tracks to play select a random song
         if(nextTracks.isEmpty()) {

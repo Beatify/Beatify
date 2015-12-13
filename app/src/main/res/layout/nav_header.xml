@@ -15,8 +15,7 @@
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
         android:src="@android:drawable/sym_def_app_icon"
-        android:id="@+id/spotify_user_img_dummy"
-        android:visibility="gone"/>
+        android:id="@+id/spotify_user_img_dummy" />
 
     <WebView
         android:id="@+id/spotify_user_img"
@@ -25,7 +24,8 @@
         android:layout_margin="2dp"
         android:padding="3dp"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"/>
+        android:layout_centerVertical="true"
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/spotify_user_name"

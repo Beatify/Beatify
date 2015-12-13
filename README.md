@@ -5,7 +5,7 @@ A perfect music playing app works according to your heart beats!!
 * Spotify!
 * kaaes,
 * echo nest API, 
-* Polar heart rate sensor
+* Low energy bluetooth heart rate sensor
 
 
 
